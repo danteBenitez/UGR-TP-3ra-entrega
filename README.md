@@ -10,16 +10,20 @@ Este repositorio contiene el pipeline analítico y predictivo completo para el e
 1. **Volumen Procesado y Grilla Temporal:** Más de 70 millones de transacciones de molinetes consolidadas en **44 estaciones** (2014–2019) y regularizadas en una matriz equidistante de **7.145.292 registros** (76 ventanas comerciales de 15 min por día, `05:00` a `23:45`).
 2. **Heterogeneidad Estadística (Kolmogorov-Smirnov):** Se rechazó $H_0$ en el **100% de las 44 estaciones** ($p < 10^{-15}$), validando que las distribuciones de demanda en días no laborables difieren estructuralmente del régimen laboral.
 3. **Modelado Supervisado (Regresión Lineal vs. Gradient Boosting / XGBoost):**
-   - Bajo partición estrictamente cronológica (*Time-Based Splitting*: `Train` 2014–2017, `Val` 2018, `Test` 2019), **XGBoost** redujo el **RMSE en un 23,25%** (`55,89` vs `72,82` pax/15min) y el **MAE en un 32,34%** (`22,20` vs `32,80` pax/15min) respecto a la Regresión Lineal en el año de prueba (2019), logrando **$R^2 = 0,9504$**.
+   - Bajo partición estrictamente cronológica (*Time-Based Splitting*: `Train` 2014–2017, `Val` 2018, `Test` 2019), **XGBoost** superó de forma contundente al baseline lineal en el año de prueba (2019):
+     - **RMSE:** Reducción del **23,09%** (`56,01` vs `72,82` pax/15min).
+     - **MAE:** Reducción del **31,98%** (`22,31` vs `32,80` pax/15min).
+     - **Bondad de ajuste:** **$R^2 = 0,9502$** en test (frente a $0,9157$ del modelo lineal).
+   - En pronósticos *Multi-Step* hacia el futuro, XGBoost retiene un **$R^2 = 0,9437$** a 30 minutos y **$R^2 = 0,9261$** a 60 minutos.
 4. **Métricas Operativas Derivadas (Fase 8):**
-   - El modelo predice el Ratio de Retención por estación con un error medio de solo **0,58 puntos porcentuales**, captura el desplazamiento horario de los picos (*peak shift* hacia la franja vespertina) y clasifica las 44 estaciones en **4 Categorías Operativas según Presión de Andén**.
+   - El modelo predice el Ratio de Retención por estación con un error medio de solo **0,58 puntos porcentuales**, captura el desplazamiento horario de los picos (*peak shift* vespertino en fines de semana) y clasifica las 44 estaciones en **4 Categorías Operativas según Presión de Andén**.
 
 ---
 
 ## 📁 Estructura del Repositorio
 
 ```text
-UGR-TP-3ra-entrega/
+EDA/
 ├── data_processed/                     # Datasets procesados en formato Parquet
 │   ├── subte_consolidado_15min.parquet # Demanda agregada cada 15 min (2014-2019)
 │   ├── subte_diario_estaciones.parquet # Demanda diaria consolidada por estación
@@ -56,17 +60,64 @@ UGR-TP-3ra-entrega/
 │   └── generar_notebook.py             # Generador del Jupyter Notebook reproducible
 ├── notebook_eda_subte.ipynb            # Jupyter Notebook completo (EDA + Modelado + Evaluación)
 ├── run_analysis.py                     # Script orquestador end-to-end (Pasos 1 a 5)
-└── requirements.txt                    # Dependencias del proyecto
+├── requirements.txt                    # Dependencias del proyecto
+└── .gitignore                          # Exclusión de datos crudos masivos (6.7 GB) y temporales
 ```
 
 ---
 
-## 🚀 Ejecución del Pipeline
+## 🚀 Instalación y Puesta en Marcha
 
+### 1. Clonar el Repositorio
 ```bash
-# Ejecutar todo el pipeline (EDA + Preparación Modelado + Entrenamiento y Evaluación):
-python run_analysis.py
-
-# Ejecutar únicamente la preparación para modelado y entrenamiento (Pasos 4 y 5):
-python run_analysis.py --only-modeling
+git clone https://github.com/TU_USUARIO/TU_REPOSITORIO.git
+cd EDA
 ```
+
+### 2. Configurar el Entorno e Instalar Dependencias
+Se recomienda utilizar Python 3.10 o 3.11:
+```bash
+python -m venv venv
+# En Windows:
+.\venv\Scripts\activate
+# En Linux/macOS:
+source venv/bin/activate
+
+pip install -r requirements.txt
+```
+
+---
+
+## 💻 Modos de Uso
+
+Los datasets optimizados en Parquet se encuentran versionados en `data_processed/` (~11 MB), por lo que **no es necesario descargar los 6.7 GB de CSVs crudos** para reproducir los análisis.
+
+### Opción A: Ejecución Completa por Consola (Recomendado)
+Ejecuta el script orquestador `run_analysis.py`, que recorre automáticamente los 5 pasos del pipeline:
+```bash
+python run_analysis.py
+```
+*(Opcionales disponibles:)*
+- `python run_analysis.py --only-modeling`: Corre únicamente la preparación de series temporales, el entrenamiento de modelos y las métricas operativas (Pasos 4 y 5).
+- `python run_analysis.py --force-reprocess`: Si colocaste los 6 CSVs originales en `csv/`, fuerza la re-ingesta y limpieza de los 70M de registros desde cero.
+
+### Opción B: Ejecución en Jupyter Notebook o VS Code
+1. Abre el archivo `notebook_eda_subte.ipynb` en Jupyter o VS Code.
+2. Selecciona el kernel de Python correspondiente.
+3. Presiona **"Run All" / "Ejecutar todas las celdas"**. El cuaderno ejecutará de principio a fin el preprocesamiento, los contrastes estadísticos, el EDA visual, el entrenamiento de modelos y la evaluación operativa.
+
+### Opción C: Ejecución en Google Colab
+1. Sube el cuaderno `notebook_eda_subte.ipynb` a Google Colab.
+2. Clona el repositorio en una celda inicial para disponer de los datos y scripts modulares:
+   ```python
+   !git clone https://github.com/TU_USUARIO/TU_REPOSITORIO.git
+   %cd TU_REPOSITORIO
+   !pip install -r requirements.txt
+   ```
+3. Menú **Entorno de ejecución** $\to$ **"Ejecutar todas"** (`Ctrl + F9`).
+
+---
+
+## 📑 Licencia y Fuentes
+- **Fuente de datos:** Registros oficiales de ingresos por molinetes de la Red de Subterráneos de CABA (Líneas A, B y C, período 2014 a 2019), Gobierno de la Ciudad Autónoma de Buenos Aires.
+- **Ámbito académico:** Trabajo Práctico de Metodología de la Investigación y Ciencia de Datos — Universidad de Gran Rosario (UGR).
