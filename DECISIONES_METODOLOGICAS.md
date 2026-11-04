@@ -20,12 +20,46 @@ Registro de los cambios de método, correcciones y reinterpretaciones del análi
 - **Cambio:** Con los datos corregidos, los 750 intervalos críticos ocurren todos en Constitución, el 92% entre las 07:00 y las 10:00 y casi todos en sábados. Se elimina la afirmación de saturación generalizada en nodos de transbordo durante fines de semana; el hallazgo se interpreta como persistencia del viaje laboral matutino de los sábados en la cabecera de la Línea C.
 - **Impacto en el marco teórico:** La discusión no puede apoyarse en la idea de que la reducción de frecuencias de fin de semana satura los nodos de transbordo en general.
 
-## DM-03 · Heterogeneidad interna de los días no laborables
-- **Estado:** Parcialmente implementada. La desagregación descriptiva está en el notebook (sección 5.1); la clasificación usada en los análisis sigue siendo binaria.
+## DM-03 · Clasificación de tipos de día: Hábil / Sábado / Domingo-Feriado
+- **Estado:** Aceptada (pendiente de implementar en el notebook). Hoy el notebook sólo incluye la desagregación descriptiva (sección 5.1); los análisis siguen usando la dicotomía Hábil / No Laborable.
 - **Tipo:** Cambio de clasificación
-- **Evidencia:** Retención por tipo de día: sábado 38,48%, domingo 18,78%, feriado 22,87%. Los perfiles horarios también difieren (sábado con meseta al mediodía, domingo con máximo al atardecer).
-- **Propuesta:** Reemplazar la dicotomía Hábil / No Laborable por tres categorías: Hábil, Sábado y Domingo/Feriado.
-- **Impacto en el marco teórico:** La definición operativa de "día no laborable" y las hipótesis que la usan deben reformularse para tres categorías.
+
+### Decisión
+Se reemplaza la dicotomía Hábil / No Laborable por **tres categorías**, que coinciden con los cronogramas de servicio del operador (Emova opera con horarios de días hábiles, de sábados y de domingos y feriados):
+
+| Categoría | Incluye |
+|---|---|
+| **Hábil** | Lunes a viernes no feriados |
+| **Sábado** | Sábados no feriados y **Jueves Santo** cuando no coincide con otro feriado |
+| **Domingo-Feriado** | Domingos y feriados nacionales, incluidos los **feriados con fines turísticos** (puentes) |
+
+### Por qué no dos categorías
+Los días no laborables no son un régimen homogéneo:
+- **Volumen:** la retención es de 38,48% en sábados, 18,78% en domingos y 22,87% en feriados.
+- **Forma:** la distancia de variación total (TV, ver DM-04) entre sábado y domingo tiene una mediana de 0,170 entre estaciones (rango 0,091–0,311), del mismo orden que la distancia entre domingo y día hábil (0,193). El sábado tiene una meseta centrada en el mediodía; el domingo, su máximo al atardecer.
+
+Agruparlos mezcla dos perfiles distintos en uno que no representa a ninguno.
+
+### Por qué feriados junto con domingos
+No se asume: se contrastó con los datos (análisis exploratorio, 1.000 permutaciones estratificadas por año-trimestre, excluyendo días sin servicio):
+- **Forma:** la TV entre domingos y feriados tiene una mediana de 0,052 entre estaciones (rango 0,025–0,089), cerca de un tercio de la distancia sábado-domingo.
+- **Feriado por feriado:** de los 108 feriados observados, el perfil de red de 92 se parece más al domingo medio que al sábado o al día hábil.
+- **Volumen:** los feriados son algo más concurridos que los domingos (retención mediana 22,5% frente a 18,5%).
+- El test de permutación rechaza la igualdad de forma en 42 de 44 estaciones, pero con un tamaño de efecto pequeño (TV ≈ 0,05). Es un caso de lo señalado en DM-04: con este volumen de datos, diferencias menores resultan significativas, y lo relevante es la magnitud.
+
+El agrupamiento queda así respaldado tanto por la práctica operativa como por los datos. La diferencia residual se informa como hallazgo: los feriados tienen forma de domingo, con algo más de volumen.
+
+### Excepciones
+- **Jueves Santo** (sólo cuando no coincide con otro feriado; en el período: 2014, 2017, 2018 y 2019). Legalmente es un día no laborable optativo, no un feriado. Los datos muestran demanda de sábado (3 de los 4 días) o de día hábil (1), lejos del domingo (TV mediana 0,171 al domingo frente a 0,090 al día hábil). El operador lo trata como sábado: en 2024 "el Subte funcionará con el horario de los días sábado" (*enelsubte.com*, "Cronograma de servicio de Subte para la Semana Santa", 27/03/2024). Se clasifica como **Sábado**. *Supuesto:* la fuente es posterior al período de estudio; se asume que la práctica operativa era la misma en 2014–2019. En 2015 y 2016 el Jueves Santo coincidió con feriados nacionales (2 de abril y 24 de marzo) y se mantiene como Domingo-Feriado.
+- **Feriados con fines turísticos** (puentes; 12 días en el período). Su demanda queda entre la de sábado y la de domingo (6 se parecen más al sábado, 5 al domingo, 1 al día hábil). Se clasifican como **Domingo-Feriado**, consistente con su tratamiento como feriado en la operación del servicio. La demanda intermedia se menciona como matiz.
+
+### Observaciones sobre la fuente de feriados
+La librería `holidays` lista entre 17 y 20 fechas por año. Incluye el Jueves Santo y los feriados puente. Cuando dos feriados coinciden en una fecha, la registra con un solo nombre.
+
+### Impacto en el marco teórico
+- La definición operativa de tipo de día pasa de dos a tres categorías y se fundamenta tanto en la práctica operativa (cronogramas del operador) como en la evidencia empírica.
+- Las hipótesis y comparaciones se formulan entre tres categorías (Hábil–Sábado, Hábil–Domingo-Feriado, Sábado–Domingo-Feriado).
+- Se explicitan las excepciones (Jueves Santo, puentes) y el supuesto sobre la práctica operativa.
 
 ## DM-04 · Rediseño de la validación estadística: volumen y forma
 - **Estado:** Propuesta
@@ -75,8 +109,10 @@ K-S subestimaría sistemáticamente la diferencia de forma justamente en las est
 ### Inferencia: test de permutación
 Bajo H₀ꜰ, la etiqueta de tipo de día no aporta información sobre el perfil. El procedimiento, para cada estación, es:
 1. Calcular TV con las etiquetas reales (TV_obs).
-2. Reasignar aleatoriamente las etiquetas entre días completos, conservando la cantidad de días de cada tipo, y recalcular TV. Repetir B veces (B ≥ 1.000).
+2. Reasignar aleatoriamente las etiquetas entre días completos, conservando la cantidad de días de cada tipo, y recalcular TV. Repetir B veces (B ≥ 10.000; ver nota).
 3. p-valor = (1 + número de permutaciones con TV ≥ TV_obs) / (B + 1). El +1 incluye la asignación observada entre las posibles y evita p-valores iguales a cero; el p-valor mínimo alcanzable es 1/(B + 1).
+
+*Nota sobre B:* con corrección de Holm sobre 44 estaciones, el menor p-valor ajustado alcanzable es 44/(B + 1). Con B = 1.000 ese piso es 0,044, apenas por debajo de 0,05, y todos los rechazos aparecen con el mismo valor. Con B = 10.000 el piso baja a 0,0044.
 
 Como se permutan días completos, la dependencia entre intervalos de un mismo día se conserva y deja de afectar la inferencia. El único supuesto es la **intercambiabilidad de los días** bajo H₀ꜰ: si el tipo de día no influyera en el perfil, cualquier día podría haber tenido cualquiera de las etiquetas. La permutación se hace dentro de cada combinación año-mes (permutación estratificada), de modo que sólo se intercambian etiquetas entre días comparables en estación del año y nivel de demanda.
 
@@ -118,7 +154,7 @@ Corresponde a la clasificación binaria actual, con permutación no estratificad
   - *Coherencia:* otros 1.271 días-estación no tienen ningún registro en los datos y ya quedaban excluidos de hecho. La exclusión de los ceros trata igual "sin datos" y "sin servicio", y coincide con el análisis de forma.
   - *Sensibilidad (clasificación binaria actual):* retención de red 27,86% incluyendo ceros, 28,03% excluyéndolos y 28,21% excluyendo además los 384 días con ingreso positivo menor al 10% de la mediana de la estación para su tipo de día. Por estación, el cambio máximo al excluir ceros es de +0,84 pp (Carlos Gardel: 62,22% → 63,05%). Los resultados se mueven menos de 0,4 pp a nivel de red, por lo que no dependen de este tratamiento. El umbral del 10% es arbitrario y sólo se usa como chequeo, no como criterio de exclusión.
 - **Tamaño de los estratos de permutación: sin acción con tres categorías** (2026-11-04). Se había planteado que los estratos año-mes podían ser demasiado chicos; el conteo muestra que no lo son.
-  - *Con tres categorías* (Hábil / Sábado / Domingo-Feriado), todo estrato año-mes contiene al menos 18 días hábiles, 3 sábados y 4 domingos o feriados, y ningún estrato carece de alguna categoría. Lo que limita un test de permutación es la cantidad de asignaciones posibles, no la de días: un estrato típico (21 hábiles + 4 sábados) admite 12.650 asignaciones distintas, y el conjunto de los 72 estratos, del orden de 10²⁹⁵. Las 1.000–10.000 permutaciones aleatorias se extraen de un espacio en la práctica ilimitado.
+  - *Con tres categorías* (Hábil / Sábado / Domingo-Feriado), todo estrato año-mes contiene al menos 18 días hábiles, 3 sábados y 4 domingos o feriados, y ningún estrato carece de alguna categoría. Lo que limita un test de permutación es la cantidad de asignaciones posibles, no la de días: un estrato típico (21 hábiles + 4 sábados) admite 12.650 asignaciones distintas, y el conjunto de los 72 estratos, del orden de 10²⁹⁵. Las 10.000 permutaciones aleatorias se extraen de un espacio en la práctica ilimitado.
   - *Si los feriados se separan como cuarta categoría* (DM-03): hay ~1 feriado por mes y 9 estratos sin ninguno. Esos estratos no sesgan el test (simplemente no aportan a la comparación con feriados), pero la comparación queda con ~90 días. En ese caso se usarán estratos año-trimestre **sólo para las comparaciones que involucren feriados**, resignando algo de control estacional a cambio de estratos con suficientes días.
 - **Dependencia entre estaciones: se resuelve en la presentación** (2026-11-04). Las 44 estaciones comparten el mismo calendario, por lo que un factor que afecte a ciertos días (paros, clima, eventos) incide en todas a la vez y sus resultados no son evidencias independientes. Esto no invalida ningún test: cada test por estación es válido por separado y la corrección de Holm lo es bajo cualquier dependencia. El problema sólo aparece al resumir: no se presentará el recuento "X de 44 estaciones difieren" como confirmaciones independientes, sino la **distribución de los tamaños de efecto** (TV) entre estaciones. No se plantea un test a nivel de red.
 
