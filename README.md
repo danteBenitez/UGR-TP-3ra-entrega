@@ -39,14 +39,9 @@ EDA/
 │   │   ├── 05_resultados_kolmogorov_smirnov_44_estaciones.md
 │   │   └── 06_presion_anden_analisis.md
 │   └── resumen_metodologia.md          # Síntesis interpretativa para la sección escrita
-├── src/                                # Scripts Python modulares
-│   ├── preprocesamiento.py             # Ingesta por bloques, sanitización y normalización
-│   ├── eda_visualizaciones.py          # Generador de gráficos continuos en alta resolución
-│   ├── validacion_estadistica.py       # Test K-S, ratios de retención y presión de andén
-│   └── generar_notebook.py             # Generador del notebook interactivo
-├── notebook_eda_subte.ipynb            # Jupyter Notebook reproducible de principio a fin
-├── run_analysis.py                     # Script maestro para ejecución end-to-end
-├── requirements.txt                    # Dependencias del proyecto
+├── notebook_eda_subte.ipynb            # Pipeline completo: ingesta → EDA → validación → exportación de tablas y gráficos
+├── pyproject.toml / uv.lock            # Dependencias del proyecto (gestionadas con uv)
+├── PLAN.md                             # Consigna del análisis
 └── .gitignore                          # Exclusión de datos crudos (6.7 GB) y temporales
 ```
 
@@ -61,30 +56,22 @@ cd EDA
 ```
 
 ### 2. Instalar Dependencias
-Se recomienda utilizar un entorno virtual con Python 3.10 o superior:
+El proyecto usa [uv](https://docs.astral.sh/uv/) y requiere Python 3.14 o superior:
 ```bash
-python -m venv venv
-# En Windows:
-.\venv\Scripts\activate
-# En Linux/macOS:
-source venv/bin/activate
-
-pip install -r requirements.txt
+uv sync
 ```
 
 ### 3. Ejecutar el Análisis
-Los datasets procesados (`data_processed/`) ya se encuentran incluidos en el repositorio (ocupan solo 11.6 MB en conjunto), por lo que **no es necesario descargar los 6.7 GB de CSVs originales** para reproducir los resultados:
+Todo el pipeline vive en un único notebook, `notebook_eda_subte.ipynb`. Ejecutado de principio a fin, regenera las tablas (`output/tablas/`) y los gráficos (`output/graficos/`).
 
-- **Ejecución vía script (regenera gráficos y tablas):**
-  ```bash
-  python run_analysis.py
-  ```
-  *(Opcional: Si colocaste los 6 CSVs originales en `csv/` y deseas forzar la re-ingesta completa de los 70M de registros desde cero, ejecuta: `python run_analysis.py --force-reprocess`).*
+Los datasets procesados (`data_processed/`) ya se encuentran incluidos en el repositorio (ocupan solo 11.6 MB en conjunto), por lo que **no es necesario descargar los 6.7 GB de CSVs originales** para reproducir los resultados: el notebook usa los parquet cacheados si existen.
 
-- **Exploración interactiva en Jupyter Notebook:**
+- **Exploración interactiva:** abrir el notebook en VS Code / Jupyter seleccionando el kernel del entorno `.venv`.
+- **Ejecución completa sin interfaz:**
   ```bash
-  jupyter notebook notebook_eda_subte.ipynb
+  uv run jupyter nbconvert --to notebook --execute --inplace notebook_eda_subte.ipynb
   ```
+- **Re-ingesta desde los CSV originales:** colocar los 6 archivos `historico_AAAA.csv` en `csv/` y fijar `FORCE_REPROCESS = True` en la celda de configuración del notebook. Esto regenera además `data_processed/` y la tabla `01_resumen_nulos_limpieza.md`.
 
 ---
 
