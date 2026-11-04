@@ -43,6 +43,7 @@ EDA/
 ├── notebook_eda_subte.ipynb            # Pipeline completo: ingesta → EDA → validación → exportación de tablas y gráficos
 ├── pyproject.toml / uv.lock            # Dependencias del proyecto (gestionadas con uv)
 ├── PLAN.md                             # Consigna del análisis
+├── DECISIONES_METODOLOGICAS.md         # Registro de cambios de método y su impacto en el marco teórico
 └── .gitignore                          # Exclusión de datos crudos (6.7 GB) y temporales
 ```
 
