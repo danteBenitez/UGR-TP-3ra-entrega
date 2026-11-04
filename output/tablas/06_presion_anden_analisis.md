@@ -3,7 +3,10 @@
 Se identificaron los intervalos de 15 minutos en fines de semana y feriados donde la tasa de afluencia por molinete superó la capacidad nominal de absorción de andén estimada (umbral crítico: **1,200 pasajeros por ventana de 15 min**):
 
 - **Total de eventos de alta presión registrados (2014-2019):** 750 intervalos.
-- **Focos de máxima concentración:** Nodos de transbordo intermodal masivo (Constitución en Línea C, Retiro en Línea C, Leandro N. Alem / Florida en Línea B y Plaza Miserere en Línea A).
+- **Estaciones con eventos:** Constitución (Línea C): 750.
+- **Distribución por tipo de día:** Sábado: 688, Feriado: 62.
+- **Franja horaria:** 92.1% de los eventos ocurre entre las 07:00 y las 10:00 (ventanas 07:00 a 09:45).
+- **Evolución anual:** 2014: 18, 2015: 41, 2016: 75, 2017: 140, 2018: 258, 2019: 218.
 
 ### Ventanas Horarias de Mayor Presión de Andén (Top 15 Críticas)
 
