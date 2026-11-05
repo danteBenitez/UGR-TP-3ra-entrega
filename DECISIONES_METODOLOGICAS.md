@@ -21,7 +21,7 @@ Registro de los cambios de método, correcciones y reinterpretaciones del análi
 - **Impacto en el marco teórico:** La discusión no puede apoyarse en la idea de que la reducción de frecuencias de fin de semana satura los nodos de transbordo en general.
 
 ## DM-03 · Clasificación de tipos de día: Hábil / Sábado / Domingo-Feriado
-- **Estado:** Implementada (2026-11-05). La clasificación se calcula con `agregar_calendario()` (notebook, sección 2.2), que se aplica en la ingesta y al cargar los datos cacheados; la sección 2.6 muestra los días por tipo y las excepciones. Todas las tablas y figuras usan las tres categorías. *Nota:* las cifras de evidencia de esta entrada son las del análisis exploratorio previo (Jueves Santo todavía contado como feriado); con la clasificación implementada, la retención de red es 38,58% (Sábado) y 19,60% (Domingo-Feriado), y la de los feriados, 21,95%.
+- **Estado:** Implementada (2026-11-05). La clasificación se calcula con `agregar_calendario()` (notebook, sección 2.2), que se aplica en la ingesta y al cargar los datos cacheados; la sección 2.6 muestra los días por tipo y las excepciones. Todas las tablas y figuras usan las tres categorías. *Nota:* las cifras de evidencia de esta entrada son las del análisis exploratorio previo (Jueves Santo todavía contado como feriado); con la clasificación implementada, la retención de red es 38,58% (Sábado) y 19,60% (Domingo-Feriado), y la de los feriados, 21,95%; tras excluir los días sin servicio (DM-04), 38,59%, 19,80% y 22,21%. Con el método de DM-04, la TV mediana entre domingos y feriados es 0,049 (rango 0,022–0,085), sin diferencia significativa en 5 de las 44 estaciones.
 - **Tipo:** Cambio de clasificación
 
 ### Decisión
@@ -62,7 +62,7 @@ La librería `holidays` lista entre 17 y 20 fechas por año. Incluye el Jueves S
 - Se explicitan las excepciones (Jueves Santo, puentes) y el supuesto sobre la práctica operativa.
 
 ## DM-04 · Rediseño de la validación estadística: volumen y forma
-- **Estado:** Propuesta
+- **Estado:** Implementada (2026-11-05). Notebook: exclusión de días sin servicio al cargar los datos (2.4) y sensibilidad (2.7); retención con IC por bootstrap de fechas completas, 2.000 remuestreos (sección 5); perfiles normalizados, TV y test de permutación con B = 10.000 y Holm (sección 6). Se eliminan el KDE y la prueba K-S. La banda simultánea se implementó en la figura de diferencias por ventana.
 - **Tipo:** Cambio de método inferencial (reemplaza el test K-S actual)
 
 **Núcleo del método** (lo esencial para el marco teórico):

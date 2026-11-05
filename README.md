@@ -9,10 +9,10 @@ Este repositorio contiene el pipeline analítico y el código fuente para el est
 
 1. **Volumen Procesado:** Más de 70 millones de registros de molinete (41 millones correspondientes a las Líneas A, B y C), consolidados en **44 estaciones** oficiales en intervalos de 15 minutos y agregados diarios.
 2. **Tres tipos de día:** el análisis distingue días **hábiles**, **sábados** y **domingos y feriados**, en coincidencia con los cronogramas del operador (ver `DECISIONES_METODOLOGICAS.md`, DM-03).
-3. **Heterogeneidad Estadística (Kolmogorov-Smirnov):** Se rechazó $H_0$ en las **44 estaciones**, tanto para hábil frente a sábado ($D$ entre 0,27 y 0,76) como para hábil frente a domingo-feriado ($D$ entre 0,34 y 0,77), con $p < 10^{-15}$. Este contraste será reemplazado según DM-04.
-4. **Ratio de Retención:** la red retiene el **38,58%** de la demanda hábil los sábados y el **19,60%** los domingos y feriados.
-   - *Mayor Retención (Polos recreativos / transbordo):* **Carlos Gardel** (72,29% los sábados; 54,14% los domingos y feriados), **Alberti** y **Plaza Miserere** los sábados (54,14% y 53,01%), **Independencia** y **Retiro** los domingos y feriados (31,69% y 28,14%).
-   - *Mayor Contracción (Distrito financiero / administrativo):* **Diagonal Norte** y **Plaza de Mayo** los sábados (18,70% y 18,76%); **Florida** y **Diagonal Norte** los domingos y feriados (9,04% y 9,18%).
+3. **Distribución horaria:** la distancia de variación total entre los perfiles normalizados de días hábiles y no laborables tiene una mediana de **0,169** para los sábados (0,085–0,313) y de **0,186** para los domingos y feriados (0,075–0,413), con diferencias significativas en las 44 estaciones (test de permutación sobre días completos, corrección de Holm). Las mayores diferencias se dan en cabeceras residenciales y de transbordo; domingos y feriados tienen distribuciones muy similares entre sí (TV mediana 0,049).
+4. **Ratio de Retención** (días con servicio, IC 95% por bootstrap): la red retiene el **38,59%** (37,47–39,72) de la demanda hábil los sábados y el **19,80%** (19,20–20,37) los domingos y feriados.
+   - *Mayor Retención (Polos recreativos / transbordo):* **Carlos Gardel** (72,19% los sábados; 55,53% los domingos y feriados), **Alberti** y **Plaza Miserere** los sábados (54,10% y 53,00%), **Independencia** y **Retiro** los domingos y feriados (31,58% y 28,02%).
+   - *Mayor Contracción (Distrito financiero / administrativo):* **Plaza de Mayo** y **Diagonal Norte** los sábados (18,47% y 18,76%); **Diagonal Norte** y **Florida** los domingos y feriados (9,18% y 9,22%).
 5. **Presión de Andén:** Con un umbral supuesto de 1.200 pax / 15 min, los 750 intervalos críticos en días no laborables ocurren todos en **Constitución**, el 92% entre las 07:00 y las 10:00 y casi todos en sábados (727; 23 en domingos y feriados), con tendencia creciente en el período. Esta métrica será reemplazada por la frecuencia mínima requerida (DM-05).
 
 ---
@@ -30,14 +30,16 @@ EDA/
 │   │   ├── 02_curva_demanda_estacional_mes.png
 │   │   ├── 03_perfil_horario_por_linea.png
 │   │   ├── 04_comparativa_habil_nolab_estaciones_clave.png
-│   │   ├── 05_kde_habil_vs_nolaborable.png
-│   │   └── 06_presion_anden_ventanas_criticas.png
+│   │   ├── 05_retencion_por_estacion_ic.png
+│   │   ├── 06_presion_anden_ventanas_criticas.png
+│   │   ├── 07_tv_distribucion_horaria_por_estacion.png
+│   │   └── 08_diferencias_por_ventana_estaciones_representativas.png
 │   ├── tablas/                         # Tablas tabuladas en Markdown
 │   │   ├── 01_resumen_nulos_limpieza.md
 │   │   ├── 02_estadisticas_descriptivas.md
 │   │   ├── 03_ratios_retencion_linea.md
 │   │   ├── 04_ratios_retencion_top_bottom_estaciones.md
-│   │   ├── 05_resultados_kolmogorov_smirnov_44_estaciones.md
+│   │   ├── 05_distribucion_horaria_tv_permutacion.md
 │   │   └── 06_presion_anden_analisis.md
 │   └── resumen_metodologia.md          # Síntesis interpretativa para la sección escrita
 ├── notebook_eda_subte.ipynb            # Pipeline completo: ingesta → EDA → validación → exportación de tablas y gráficos

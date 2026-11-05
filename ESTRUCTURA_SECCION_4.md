@@ -35,7 +35,7 @@ Esqueleto de la sección 4 del documento final, alineado con los objetivos (1.3)
 
 | Elemento | Contenido | Fuente | Estado |
 |---|---|---|---|
-| **Tabla 4.1.** Cobertura de los datos | Registros brutos y filtrados por año; 44 estaciones; días-estación sin servicio excluidos (DM-04); distribución de días por tipo de día y excepciones (Jueves Santo, feriados puente) | Notebook 2.3–2.5; tabla `01_resumen_nulos_limpieza.md` | 🔧 DM-03 y DM-04 |
+| **Tabla 4.1.** Cobertura de los datos | Registros brutos y filtrados por año; 44 estaciones; días-estación sin servicio excluidos (DM-04); distribución de días por tipo de día y excepciones (Jueves Santo, feriados puente) | Notebook 2.3–2.7; tabla `01_resumen_nulos_limpieza.md` | ✅ |
 | Texto | Control de calendario (sección 2.5 del notebook) y corrección del parseo de fechas, en una o dos oraciones | DM-01 | ✅ |
 
 **Qué aporta:** acredita que los resultados descansan sobre un calendario verificado y sobre una definición explícita de la población analizada (días con servicio).
@@ -47,22 +47,22 @@ Esqueleto de la sección 4 del documento final, alineado con los objetivos (1.3)
 ### 4.2.1. Perfiles horarios por tipo de día
 | Elemento | Contenido | Fuente | Estado |
 |---|---|---|---|
-| **Fig. 4.1** | Perfil horario medio de la red para Hábil, Sábado y Domingo-Feriado | Notebook 4.1 (rehacer con 3 categorías) | 🔧 DM-03 |
+| **Fig. 4.1** | Perfil horario medio de la red para Hábil, Sábado y Domingo-Feriado | Notebook 4.1; `01_curva_demanda_dia_semana.png` | ✅ |
 
 **Cómo se interpreta:** patrón bimodal de los días hábiles frente a la meseta del mediodía del sábado y el máximo al atardecer del domingo.
 
 ### 4.2.2. Perfiles por línea y en estaciones representativas
 | Elemento | Contenido | Fuente | Estado |
 |---|---|---|---|
-| **Fig. 4.2** | Perfil por línea y tipo de día (3 paneles) | Notebook 4.3 | 🔧 DM-03 |
-| **Fig. 4.3** | Perfiles en estaciones representativas de cada grupo identificado en DM-04: origen residencial (p. ej. San Pedrito), central (p. ej. Florida), transbordo (p. ej. Constitución) y recreativa (Carlos Gardel) | Notebook 4.4 (rehacer la selección) | 🔧 DM-03 |
+| **Fig. 4.2** | Perfil por línea y tipo de día (3 paneles) | Notebook 4.3; `03_perfil_horario_por_linea.png` | ✅ |
+| **Fig. 4.3** | Perfiles en estaciones representativas de cada grupo identificado en DM-04: origen residencial (p. ej. San Pedrito), central (p. ej. Florida), transbordo (p. ej. Constitución) y recreativa (Carlos Gardel) | Notebook 4.4; `04_comparativa_habil_nolab_estaciones_clave.png` | ✅ |
 
 La selección de estaciones se justifica por los grupos observados en los datos, no a mano como hasta ahora.
 
 ### 4.2.3. Estacionalidad mensual
 | Elemento | Contenido | Fuente | Estado |
 |---|---|---|---|
-| **Fig. 4.4** | Volumen diario medio por mes, por tipo de día | Notebook 4.2 (desagregar por tipo de día) | 🔧 DM-03 |
+| **Fig. 4.4** | Volumen diario medio por mes, por tipo de día | Notebook 4.2; `02_curva_demanda_estacional_mes.png` | ✅ |
 
 **Qué aporta:** además de describir la estacionalidad, justifica que la planificación se haga por temporada (DM-06).
 
@@ -73,24 +73,24 @@ La selección de estaciones se justifica por los grupos observados en los datos,
 ### 4.3.1. Volumen: ratio de retención
 | Elemento | Contenido | Fuente | Estado |
 |---|---|---|---|
-| **Tabla 4.2.** Retención por línea y tipo de día | Ingresos diarios medios y ratio de retención de Sábado y de Domingo-Feriado respecto de Hábil, con IC 95% por *bootstrap* | Notebook 5 (agregar IC) | 🔧 DM-03 y DM-04 |
-| **Fig. 4.5** | Retención por estación con IC (44 estaciones ordenadas; Sábado y Domingo-Feriado) | Nueva | 🔧 DM-04 |
+| **Tabla 4.2.** Retención por línea y tipo de día | Ingresos diarios medios y ratio de retención de Sábado y de Domingo-Feriado respecto de Hábil, con IC 95% por *bootstrap* | Notebook 5.1; `03_ratios_retencion_linea.md` | ✅ |
+| **Fig. 4.5** | Retención por estación con IC (44 estaciones ordenadas; Sábado y Domingo-Feriado) | Notebook 5.3; `05_retencion_por_estacion_ic.png` | ✅ |
 
 **Cómo se interpreta:** brecha territorial entre el Microcentro (retención de ~19% los sábados y de 9–12% los domingos y feriados) y los polos recreativos y de transbordo.
 
 ### 4.3.2. Distribución horaria: distancia entre perfiles
 | Elemento | Contenido | Fuente | Estado |
 |---|---|---|---|
-| **Fig. 4.6** | Distancia de variación total (TV) por estación para Hábil–Sábado y Hábil–Domingo-Feriado, ordenada y coloreada por línea | Nueva | 🔧 DM-04 |
-| **Fig. 4.7** | Curva de diferencias por ventana en las estaciones representativas (banda simultánea opcional) | Nueva | 🔧 DM-04 |
-| **Tabla 4.4** *(opcional)* | Horarios de los máximos reales por tipo de día, como dato descriptivo, sin cálculo de desplazamiento ni contraste (DM-07) | Nueva | 🔧 DM-04 |
+| **Fig. 4.6** | Distancia de variación total (TV) por estación para Hábil–Sábado y Hábil–Domingo-Feriado, ordenada y coloreada por línea | Notebook 6.3; `07_tv_distribucion_horaria_por_estacion.png` | ✅ |
+| **Fig. 4.7** | Curva de diferencias por ventana en las estaciones representativas, con banda simultánea | Notebook 6.3; `08_diferencias_por_ventana_estaciones_representativas.png` | ✅ |
+| **Tabla 4.4** *(opcional)* | Horarios de los máximos reales por tipo de día, como dato descriptivo, sin cálculo de desplazamiento ni contraste (DM-07) | Nueva | Opcional, no implementada |
 
 **Cómo se interpreta:** la Fig. 4.6 dimensiona cuánto difiere la distribución horaria; la Fig. 4.7 localiza en qué franjas, que es la información accionable para la diagramación (dónde reforzar o reducir el servicio). Se distinguen dos grupos de estaciones. En las de origen residencial la diferencia es un desplazamiento temporal (el día hábil empieza antes). En las centrales es una redistribución (pico vespertino de regreso frente a demanda al mediodía).
 
 ### 4.3.3. Contraste de la hipótesis
 | Elemento | Contenido | Fuente | Estado |
 |---|---|---|---|
-| **Tabla 4.3.** Test de permutación por estación | Resumen por línea: rango de TV, p-valores ajustados por Holm. Incluye la comparación Domingo frente a Feriado que respalda la agrupación de DM-03 | Nueva | 🔧 DM-04 |
+| **Tabla 4.3.** Test de permutación por estación | Resumen por línea: rango de TV, p-valores ajustados por Holm. Incluye la comparación Domingo frente a Feriado que respalda la agrupación de DM-03 | Notebook 6.2; `05_distribucion_horaria_tv_permutacion.md` | ✅ |
 
 **Qué aporta:** contrasta la hipótesis con el tamaño de efecto como resultado principal. El resumen de red se presenta como distribución de efectos, no como recuento de rechazos (DM-04).
 
