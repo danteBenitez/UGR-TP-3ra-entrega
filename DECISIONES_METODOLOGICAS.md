@@ -165,3 +165,131 @@ Ninguna.
 - **Estado:** Propuesta (pendiente de discusión)
 - **Problema:** El umbral de 1.200 pax / 15 min compara los ingresos totales de la estación (ambos sentidos) con la capacidad de despacho estimada por sentido, y sus supuestos (frecuencia, capacidad por formación) no tienen fuente citada.
 - **Impacto en el marco teórico:** A definir según la alternativa que se adopte.
+
+## DM-06 · Reorientación del modelo predictivo hacia la planificación de cronogramas
+- **Estado:** Aceptada (2026-11-04), pendiente de implementar. Afecta el trabajo de modelado de la rama `origin/model`.
+- **Tipo:** Cambio de diseño del modelo y de los objetivos específicos 2 a 4
+
+### Problema
+El modelo actual (rama `origin/model`; sección 4.3 del documento) predice la demanda de los **próximos 15 minutos** a partir de los ingresos reales de la última hora (`lag_1` a `lag_4` y `media_movil_1h`, que concentran ~65% de la importancia de XGBoost). Es un modelo de pronóstico en tiempo real. El objetivo general, en cambio, es *apoyar el diseño de los cronogramas de servicio*, que se planifican con antelación, cuando esa información todavía no existe.
+
+De ahí se siguen tres problemas:
+1. **Los objetivos 3 y 4 resultan circulares.** Calcular el ratio de retención o la presión de andén "a partir de las predicciones" de 2019, con un modelo que recibe los ingresos reales de los 15 minutos previos, reproduce los valores observados de 2019 (42,12% predicho frente a 42,38% observado). Valida el modelo, pero no aporta información que no estuviera ya en los datos.
+2. **El desempeño reportado no demuestra utilidad.** Un perfil histórico sin aprendizaje automático y sin rezagos recientes alcanza un desempeño equivalente al de la regresión lineal *con* rezagos del documento (ver *Evidencia*). La mayor parte del R² = 0,95 corresponde al patrón diario regular.
+3. **El "desplazamiento de horas pico de más de 9 horas" es un artefacto.** El código busca el pico hábil entre las 06:00 y las 11:00 y el no laborable entre las 11:00 y las 22:00, lo que fuerza un desplazamiento grande.
+
+Además, el modelo fue entrenado con los datos previos a la corrección de DM-01 (fechas con día y mes invertidos), por lo que todas sus variables y métricas por tipo de día están afectadas.
+
+### Decisión
+- El modelo se orienta a la **planificación de cronogramas**, con un **horizonte de una temporada**: el cronograma de una temporada se decide con la información disponible hasta su inicio.
+- Se abandona el modelo de pronóstico en tiempo real (un paso y varios pasos adelante, estrategias recursiva y directa).
+
+### Información admisible
+- **Sí:** variables de calendario (tipo de día según DM-03, ventana de 15 min, mes, posición de los feriados), identidad y geolocalización de la estación, y todo lo observado **hasta el fin de la temporada anterior** (nivel reciente, perfiles de meses recientes, misma temporada del año previo).
+- **No:** cualquier dato de la temporada que se planifica (rezagos de 15 min, de 1 hora, del día o de la semana anterior).
+
+### Diseño de evaluación
+- **Evaluación con origen móvil por temporada:** para cada temporada de 2019, el modelo se entrena sólo con datos anteriores a su inicio y predice esa temporada. Son cuatro evaluaciones fuera de muestra en lugar de una. Las temporadas de 2018 se usan de la misma forma para el ajuste de hiperparámetros.
+- **Línea base obligatoria: perfil histórico.** Es el promedio de los ingresos por estación × tipo de día × ventana de 15 minutos sobre todos los datos anteriores al origen. Todo modelo de aprendizaje automático debe compararse contra esta línea base.
+- **Métricas en dos niveles:**
+  - *Por ventana:* MSE, RMSE y MAE, como en el marco teórico.
+  - *Por perfil* (el nivel relevante para un cronograma): distancia de variación total entre el perfil predicho y el observado por estación y tipo de día (ver DM-04), y error en el ratio de retención por estación.
+
+### Evidencia (exploratoria)
+Datos corregidos (DM-01), tres tipos de día (DM-03), horario 05:00–23:45, días-estación con menos de 20 ingresos excluidos y ventanas faltantes como 0 (mismos criterios que la rama `origin/model`).
+
+*Partición única (entrenamiento 2014–2018, prueba 2019):*
+
+| Predicción para 2019 | RMSE | MAE | R² |
+|---|---|---|---|
+| Perfil histórico (estación × tipo de día × ventana) | 73,7 | 33,0 | 0,914 |
+| Perfil histórico × factor mensual | 73,0 | 31,4 | 0,916 |
+| *Documento: regresión lineal con rezagos de la última hora* | *72,8* | *32,8* | *0,916* |
+| *Documento: XGBoost con rezagos de la última hora* | *56,0* | *22,3* | *0,950* |
+
+*Origen móvil por trimestre de 2019:*
+
+| Variante | RMSE | MAE |
+|---|---|---|
+| **A. Perfil histórico** (todos los datos previos) | **72,8** | 32,4 |
+| B. Mismo trimestre de años previos | 73,3 | 31,6 |
+| C. B ajustado al nivel del último trimestre | 73,8 | 32,7 |
+
+- Los ajustes estacionales y de nivel construidos a mano no mejoran el perfil histórico simple; el ajuste de nivel empeora el error de retención de los sábados (3,7 pp frente a ~1,5 pp).
+- A nivel de perfil, el perfil histórico reproduce 2019 con una TV mediana de 0,032 y un error medio de retención de ~1,5 pp (sábados) y ~0,8–1,0 pp (domingos y feriados).
+- El error remanente (~73 RMSE por ventana) corresponde principalmente a la variabilidad entre días alrededor del perfil típico, no predecible con información disponible una temporada antes. Perder los rezagos recientes (RMSE 56 → ~73) no afecta el objetivo de planificación: esa diferencia es variación de corto plazo a la que un cronograma no puede responder.
+- *Advertencia:* las cifras del documento provienen de los datos sin corregir y con valores atípicos acotados; la comparación es aproximada.
+
+### Experimentos con aprendizaje automático (exploratorios, 2026-11-05)
+Mismo esquema: origen móvil por trimestre de 2019 y mismos criterios de datos. Todas las variables se calculan **a la fecha de inicio de cada trimestre**, también para los trimestres de entrenamiento (cada uno recibe los perfiles y niveles que un planificador habría tenido al comenzar ese trimestre), para evitar fugas a través de los promedios. Para cada trimestre de prueba, el modelo se entrena con los trimestres anteriores hasta dos antes del origen y usa el inmediatamente anterior para la detención temprana. Configuración única, sin ajuste de hiperparámetros.
+
+**Experimento 1: XGBoost directo sobre ingresos por ventana.**
+- *Variables:* calendario (ventana, día de semana, tipo de día, mes, día del mes, feriado, puente, víspera y día posterior a feriado), estación, rezagos estacionales (misma ventana y día de semana 52 y 104 semanas antes), perfiles históricos (total, mismo trimestre de años previos, últimos 3 meses) y nivel reciente.
+- *Resultado:* mejora el RMSE por ventana en ~10% respecto del perfil histórico, pero tiene un **sesgo de volumen** fuerte: sobreestima los domingos y feriados en 17% (hasta 29% en algunos trimestres). El ~90% de la importancia corresponde a los perfiles históricos; la detención temprana ocurre entre las iteraciones 29 y 70, señal de poca información más allá del perfil.
+
+**Experimento 2: separación volumen × forma.** La predicción por ventana es el volumen diario predicho multiplicado por la forma (proporción del día en cada ventana).
+- *Forma:* promedio de las proporciones diarias por estación × tipo de día × ventana, con igual peso por día (como en DM-04). Se comparan la historia completa y los últimos 12 meses.
+- *Volumen diario por estación-día:*
+  - **V0:** promedio histórico por estación × tipo de día.
+  - **V1 (estacional ingenuo):** nivel de los últimos 3 meses × factor estacional del año previo (cociente entre ese trimestre del año anterior y los 3 meses que lo precedieron).
+  - **V2 (XGBoost):** predice el **cociente respecto del nivel reciente**, para no tener que extrapolar la tendencia, con variables de calendario, feriados, factor estacional y volumen de 52 semanas antes.
+
+*Resultados (2019, origen móvil por trimestre):*
+
+| Modelo | RMSE | MAE | Sesgo de volumen | TV de forma (mediana) | Error ret. sábado | Error ret. dom-fer | Error de volumen medio |
+|---|---|---|---|---|---|---|---|
+| Perfil histórico | 72,8 | 32,4 | −5,3% | 0,030 | 3,8 pp | 1,2 pp | 10,3% |
+| XGBoost directo | 65,8 | 28,5 | +6,0% | 0,027 | 2,2 pp | 3,5 pp | 16,4% |
+| V1 × forma 12 meses (sin aprendizaje automático) | 69,3 | 28,6 | **+2,2%** | **0,018** | 1,2 pp | 0,6 pp | **3,6%** |
+| **V2 × forma 12 meses** | **65,4** | **26,9** | +5,5% | **0,018** | **0,8 pp** | **0,6 pp** | 6,4% |
+
+Las últimas cuatro columnas miden la calidad del perfil por estación × tipo de día, promediado en 2019. El error mediano del volumen diario por estación-día es 12,6% (perfil histórico), 8,5% (V1) y 7,2% (V2).
+
+*Conclusiones:*
+- **La separación resuelve el problema de nivel:** el error de volumen medio baja de 10–16% a 4–6%, y desaparecen los sesgos extremos por tipo de día.
+- **La forma debe estimarse con datos recientes:** la de los últimos 12 meses (TV 0,018) supera a la de la historia completa (0,030–0,033). Los patrones horarios cambian lentamente entre años.
+- **V2 × forma** es el mejor modelo en general: iguala o mejora al XGBoost directo por ventana y tiene los menores errores de retención. Su debilidad es una **sobreestimación sistemática de ~5,5%**, probablemente porque aprendió el crecimiento de 2015–2018 y lo proyectó sobre un 2019 que no creció.
+- **V1 × forma**, sin aprendizaje automático, es el **mejor calibrado en volumen** y constituye una referencia difícil de superar.
+- El aporte del aprendizaje automático se concentra en la variación entre días (feriados y calendario): el error mediano diario baja de 8,5% (V1) a 7,2% (V2).
+
+*Reproducibilidad:* los scripts de estos experimentos no están versionados en el repositorio; las cifras deben regenerarse al implementar el modelo en el notebook.
+
+### Estructura propuesta del modelo
+**Predicción = volumen diario × forma intradiaria reciente.**
+- **Forma:** perfil medio de proporciones diarias de los últimos 12 meses por estación × tipo de día.
+- **Volumen:** V1 (estacional ingenuo) como referencia y V2 (XGBoost sobre el cociente respecto del nivel reciente) como aporte del aprendizaje automático.
+- **Coherencia con el resto del trabajo:** es la misma separación de DM-04, de modo que el análisis y el modelo comparten un único marco. Además, cada componente responde a una decisión de diagramación: el volumen determina la cantidad de servicios por tipo de día, y la forma, su distribución horaria.
+- **Expectativa de desempeño:** R² ≈ 0,93 por ventana, error de retención de ~0,6–0,8 pp y error de volumen medio de 4–6%.
+
+### Impacto en los objetivos
+- **Objetivo general:** sin cambios; la reorientación lo cumple con mayor fidelidad.
+- **OE2:** se reformula como predecir la demanda esperada por estación × ventana × tipo de día **para una temporada futura**, comparando modelos supervisados contra el perfil histórico.
+- **OE3 y OE4:** retención, perfiles y presión de andén se calculan sobre las proyecciones de temporadas no vistas por el modelo, y dejan de ser circulares.
+- **Hipótesis:** sin cambios.
+
+### Impacto en el marco teórico
+- **2.4 / 2.4.1 (series temporales):** se eliminan el pronóstico de un paso y de varios pasos y las estrategias recursiva y directa. Se incorporan el horizonte de pronóstico orientado a la planificación, la línea base de perfil histórico y la evaluación con origen móvil.
+- **2.3.2 (métricas):** se agregan las métricas a nivel de perfil (TV y error de retención), en conexión con DM-04.
+- **2.1 (antecedentes):** se conservan, aclarando que Zimmo et al. (2023) y Carvajal et al. (2025) abordan pronóstico de corto plazo, a diferencia de este trabajo.
+- **2.3 (aprendizaje automático en general):** sin cambios. En 2.3.3 conviene precisar que el gradient boosting se aplica al volumen diario relativo al nivel reciente, y explicar por qué los modelos de árboles no extrapolan tendencias.
+- **Estructura del modelo:** se incorpora la descomposición de la demanda en volumen y forma, vinculada a la separación de DM-04.
+
+### Impacto en la metodología y el código
+- **Metodología:**
+  - 3.5: se eliminan `lag_1` a `lag_4` y `media_movil_1h`; las variables se calculan a la fecha de inicio de cada temporada.
+  - 3.6: se incorporan la línea base y la estructura volumen × forma.
+  - 3.7: se adopta la evaluación con origen móvil por temporada.
+  - 3.8: las métricas operativas se calculan sobre las proyecciones.
+  - El cálculo del desplazamiento de horas pico debe redefinirse sin ventanas forzadas.
+- **Código (`origin/model`):**
+  - *Reutilizable:* la preparación de datos (grilla regular de 76 ventanas por día, detección de cierres y variables geográficas).
+  - *A eliminar o reescribir:* los rezagos recientes, los objetivos de varios pasos y el cálculo de picos con ventanas forzadas.
+  - Debe integrarse al notebook único y reentrenarse con los datos corregidos, después de implementar DM-03 y DM-04.
+- **Resultados y conclusiones:**
+  - El R² por ventana bajará respecto del 0,95 actual; debe presentarse en relación con la línea base, no con el modelo de tiempo real.
+  - Se elimina la recomendación de integrar el modelo en los centros de control en tiempo real.
+
+### Decisiones pendientes
+1. **Definición de temporada.** Se usaron trimestres calendario. El primer trimestre mezcla el valle estival de enero y febrero con la reactivación de marzo, y es donde más difieren las variantes. Idealmente, las temporadas deberían coincidir con los períodos en que el operador modifica sus cronogramas; si no se conocen, se usan trimestres o se separa el verano (enero–febrero) como período propio.
+2. **Resultado si el aprendizaje automático no supera la línea base.** Los experimentos muestran una mejora modesta pero consistente (V2 sobre V1 en error diario y retención). Si al implementarlo la mejora no se confirma, se informará como hallazgo: con horizonte de una temporada, la estructura regular del calendario explica casi toda la demanda que un cronograma puede atender. El modelo V1 × forma es en sí un modelo estadístico válido.
+3. **Sesgo de V2.** Diagnosticar y corregir la sobreestimación de ~5,5%. Opciones: entrenar sólo con años recientes, incorporar una variable de tendencia o combinar V2 con V1. Corregido el sesgo, V2 debería superar a V1 en todas las métricas; si no lo hace, se adopta V1.

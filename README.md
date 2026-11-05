@@ -44,6 +44,7 @@ EDA/
 ├── pyproject.toml / uv.lock            # Dependencias del proyecto (gestionadas con uv)
 ├── PLAN.md                             # Consigna del análisis
 ├── DECISIONES_METODOLOGICAS.md         # Registro de cambios de método y su impacto en el marco teórico
+├── experimentos/                       # Scripts exploratorios que respaldan DM-06 (modelo por temporada)
 └── .gitignore                          # Exclusión de datos crudos (6.7 GB) y temporales
 ```
 
