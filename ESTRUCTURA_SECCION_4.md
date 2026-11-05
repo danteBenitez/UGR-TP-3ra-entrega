@@ -5,7 +5,7 @@ Esqueleto de la sección 4 del documento final, alineado con los objetivos (1.3)
 **Estado de cada elemento:**
 - ✅ Disponible en el notebook (puede requerir regenerarse).
 - 🔧 Requiere implementar una decisión ya tomada (DM-03, DM-04 o DM-06).
-- ⏳ Requiere una decisión todavía abierta (DM-05).
+- ⏳ Requiere datos o una decisión todavía abierta (capacidad por formación y ocupación objetivo, DM-05).
 
 ---
 
@@ -119,20 +119,20 @@ Texto breve, sin figura: horizonte de una temporada, información admisible, eva
 
 ---
 
-## 4.5. Métricas operativas proyectadas y categorización de estaciones (Objetivos Específicos 3 y 4)
+## 4.5. Métricas operativas proyectadas y frecuencia requerida (Objetivos Específicos 3 y 4)
 
 ### 4.5.1. Retención y forma proyectadas
 | Elemento | Contenido | Fuente | Estado |
 |---|---|---|---|
 | **Tabla 4.7.** Retención proyectada frente a observada por estación | Para las temporadas evaluadas de 2019 | Ídem | 🔧 DM-06 |
 
-### 4.5.2. Presión de andén y categorización
+### 4.5.2. Frecuencia mínima requerida y categorización de estaciones
 | Elemento | Contenido | Fuente | Estado |
 |---|---|---|---|
-| **Fig. 4.10** | Demanda proyectada en la ventana de mayor exigencia frente al umbral de capacidad, por estación y tipo de día | Nueva | ⏳ DM-05 |
-| **Tabla 4.8.** Categorización operativa de estaciones | Criterios explícitos y reproducibles a partir de las proyecciones | Nueva | ⏳ DM-05 |
+| **Fig. 4.10** | Frecuencia mínima requerida (o intervalo máximo entre trenes) por línea, tipo de día y franja horaria, para la temporada proyectada; distinguiendo valores exactos (cabeceras) y cotas inferiores (estaciones intermedias) | Nueva | 🔧 DM-05 y DM-06 · ⏳ capacidad por formación |
+| **Tabla 4.8.** Categorización de estaciones | Estaciones determinantes por línea, tipo de día y franja, con la proporción de ventanas en que fijan la frecuencia, y exigencia relativa respecto de su línea | Nueva | Ídem |
 
-Ambos elementos dependen de cómo se resuelva el umbral (DM-05). La categorización debe salir de reglas aplicadas por código, de modo que tabla y figura no puedan contradecirse como en la versión anterior (Tabla 4.7 frente a Fig. 4.9).
+**Qué aporta:** traduce la proyección de demanda en la variable de decisión del problema, la frecuencia por línea, e identifica qué estaciones la determinan. La categorización sale de reglas aplicadas por código, de modo que tabla y figura no puedan contradecirse como en la versión anterior (Tabla 4.7 frente a Fig. 4.9).
 
 ---
 
@@ -154,7 +154,7 @@ Sirve de puente con las Conclusiones (Sección 5) sin introducir elementos nuevo
 | Fig. 4.5 (KDE) y Tabla 4.3 (K-S) | El KDE de valores por intervalo no muestra la distribución horaria; el diseño del K-S no evalúa la hipótesis (DM-04) | 4.3.2 y 4.3.3 |
 | Tablas 4.4 y 4.5 (horizontes de 15, 30 y 60 min) y Fig. 4.7 | Modelo de tiempo real, ajeno al objetivo (DM-06) | 4.4 |
 | Desplazamiento de picos "de más de 9 horas" | Artefacto de ventanas forzadas (DM-06); el concepto se reemplaza por la distribución horaria (DM-07) | 4.3.2 |
-| Fig. 4.8 y Tablas 4.6–4.7 de presión de andén | Datos con errores, umbral sin fundamento y categorización inconsistente con su figura (DM-02, DM-05) | 4.5.2 |
+| Fig. 4.8 y Tablas 4.6–4.7 de presión de andén | Datos con errores, umbral sin fundamento y categorización inconsistente con su figura (DM-02); la métrica se reemplaza por la frecuencia mínima requerida (DM-05) | 4.5.2 |
 | Recomendación de uso en centros de control en tiempo real | Fuera del alcance (DM-06) | — |
 
 ---
@@ -164,5 +164,5 @@ Sirve de puente con las Conclusiones (Sección 5) sin introducir elementos nuevo
 1. **DM-03** (tres tipos de día) en el notebook → habilita 4.1, 4.2 y la Tabla 4.2.
 2. **DM-04** (retención con IC, TV y test de permutación) → habilita 4.3.1–4.3.3.
 3. **DM-06** (modelo volumen × forma, integrando y reescribiendo `origin/model`) → habilita 4.4 y 4.5.1.
-4. **DM-05** (umbral de presión de andén) → habilita 4.5.2.
+4. **DM-05** (frecuencia mínima requerida), una vez relevada la capacidad por formación → habilita 4.5.2.
 5. Redacción de 4.6 y de las Conclusiones.

@@ -27,7 +27,8 @@ A eso se suman unas 2–3 páginas de contenido nuevo. En conjunto, cerca de **u
 | KDE de valores por intervalo | Perfil normalizado y distribución horaria |
 | Pronóstico de un paso y de varios pasos (estrategias recursiva y directa) | Distancia de variación total (TV) |
 | Regresión lineal como modelo de referencia | Test de permutación, *bootstrap*, comparaciones múltiples, tamaño de efecto |
-| | Horizonte de pronóstico, evaluación con origen móvil, modelos de referencia, descomposición volumen × forma |
+| Presión de andén como métrica (umbral fijo) | Horizonte de pronóstico, evaluación con origen móvil, modelos de referencia, descomposición volumen × forma |
+| | Frecuencia mínima requerida y estación determinante |
 
 ---
 
@@ -41,10 +42,10 @@ A eso se suman unas 2–3 páginas de contenido nuevo. En conjunto, cerca de **u
 | **2.1.3 Carvajal et al. (2025)** | Menor | La misma aclaración que en 2.1.1 | DM-06 |
 | **2.1.4 Vargas y Porras Roque (2023)** | Ninguno | — | — |
 | **2.2.1 Historia** | Ninguno | Ya menciona que Emova distingue hábiles, sábados, domingos y feriados (respalda DM-03) | — |
-| **2.2.2 Limitaciones** | Menor–moderado | El punto 1 afirma que las reducciones lineales generan "hacinamiento en andenes críticos"; los datos corregidos no lo muestran de forma generalizada. El punto 3 depende de DM-05 | DM-02, DM-05 |
+| **2.2.2 Limitaciones** | Menor–moderado | El punto 1 afirma que las reducciones lineales generan "hacinamiento en andenes críticos"; los datos corregidos no lo muestran de forma generalizada. El punto 3 cambia su métrica sustituta: frecuencia requerida en lugar de presión de andén | DM-02, DM-05 |
 | **2.2.3.1 Curvas de demanda** | Moderado | Agregar el **perfil normalizado** como definición de distribución horaria | DM-04, DM-07 |
-| **2.2.3.2 Presión del andén** | Pendiente | Depende de la resolución del umbral | DM-05 |
-| **2.2.3.3 Frecuencia de despacho** | Ninguno | — | — |
+| **2.2.3.2 Presión del andén** | Mayor (reemplazo) | Pasa a ser "Frecuencia requerida y estación determinante" | DM-05 |
+| **2.2.3.3 Frecuencia de despacho** | Menor | Se conserva; pasa a ser el concepto central de la métrica operativa | DM-05 |
 | **2.2.3.4 Flujo de pasajeros** | Menor | Agregar el volumen diario como agregado | DM-06 |
 | **2.2.3.5 Ratio de retención** | Moderado | Redefinir sobre ingresos diarios medios por estación, condicionados a la operación del servicio, por tipo de día y con IC | DM-03, DM-04 |
 | **Nueva: tipos de día** | Nueva | Tres categorías vinculadas a los cronogramas del operador y excepciones | DM-03 |
@@ -72,7 +73,7 @@ A eso se suman unas 2–3 páginas de contenido nuevo. En conjunto, cerca de **u
       2.2.3. Tipos de día y cronogramas de servicio  (NUEVA)
       2.2.4. Métricas de demanda de subtes           (ex 2.2.3)
              2.2.4.1. Curvas de demanda y distribución horaria
-             2.2.4.2. Presión del andén              (pendiente DM-05)
+             2.2.4.2. Frecuencia requerida y estación determinante  (reemplaza a Presión del andén)
              2.2.4.3. Frecuencia de despacho
              2.2.4.4. Flujo de pasajeros y volumen diario
              2.2.4.5. Ratio de retención de demanda
@@ -104,7 +105,7 @@ Agregar una oración a cada uno: el estudio aborda el pronóstico de corto plazo
 
 ### 2.2.2 (limitaciones)
 - **Punto 1:** la afirmación de que las reducciones lineales de frecuencia provocan "hacinamiento en andenes críticos" se presenta como hecho. Con los datos corregidos, la presión de andén elevada en días no laborables se concentra en Constitución, los sábados por la mañana (DM-02). Conviene presentarla como problema a evaluar, o respaldarla con una fuente.
-- **Punto 3:** se mantiene la limitación por ausencia de registros de egreso; la descripción de la presión de andén como sustituto se ajusta según DM-05.
+- **Punto 3:** se mantiene la limitación por ausencia de registros de egreso. La métrica sustituta deja de ser la presión de andén y pasa a ser la frecuencia mínima requerida, exacta en las cabeceras y cota inferior en las estaciones intermedias (DM-05).
 
 ### 2.2.3 (nueva): tipos de día y cronogramas de servicio
 Contenido:
@@ -124,8 +125,15 @@ Contenido:
 
 *Referencias:* Ceder (2019) y Boyce (2006), ya citadas, tratan los perfiles de carga como base de la diagramación.
 
-### 2.2.3.2 (presión del andén)
-Pendiente de DM-05. Mientras tanto, verificar que Ryus (2013) respalde el término: el *Transit Capacity and Quality of Service Manual* trata el hacinamiento en andenes (*platform crowding*) y los niveles de servicio peatonal, no un indicador llamado "presión de andén". Puede que la cita se esté usando de forma demasiado amplia.
+### 2.2.3.2 (reemplazo): frecuencia requerida y estación determinante
+Reemplaza a "Presión del andén" (DM-05). Contenido:
+- **Relación entre demanda y oferta:** la frecuencia necesaria para atender una demanda depende de la capacidad por formación y de la ocupación objetivo. La frecuencia mínima requerida es el cociente entre los abordajes por ventana y la capacidad útil por tren (capacidad × ocupación objetivo).
+- **Capacidad por formación:** se define a una densidad de pie explícita, tomada de un estándar (niveles de servicio del TCQSM; Ryus, 2013), con datos del material rodante de cada línea.
+- **Cabeceras y estaciones intermedias:** en una cabecera el tren parte vacío y todos los ingresos abordan en un sentido, por lo que la frecuencia requerida es exacta. En una estación intermedia el tren llega con pasajeros, carga desconocida sin registros de egreso, y los ingresos se reparten entre sentidos; la frecuencia requerida es una cota inferior.
+- **Estación determinante:** la frecuencia se fija por línea; la estación que impone la mayor frecuencia requerida en cada tipo de día y franja es la determinante.
+- La noción de presión de andén puede conservarse como motivación (hacinamiento cuando la oferta no absorbe la demanda), sin usarse como métrica.
+
+*Referencias:* Ryus (2013), ya citada, por los niveles de servicio y la densidad de pie (verificar que respalde el uso; el TCQSM trata el hacinamiento en andenes y la capacidad de los vehículos, no un indicador llamado "presión de andén"); Ceder (2019), ya citada, por la determinación de frecuencias a partir de perfiles de carga; *Material rodante – Buenos Aires Ciudad*, ya citada, por la capacidad de las formaciones.
 
 ### 2.2.3.4 (flujo de pasajeros)
 Agregar que el flujo también se agrega a nivel diario (**volumen diario** por estación), que es la componente de nivel del modelo (DM-06).
@@ -217,13 +225,13 @@ Reformular la introducción: la comparación entre tipos de día se hace sobre d
 2. **2.3.2 (fórmulas):** las sumatorias van de *i* = 0 a *N*; deben ir de *i* = 1 a *N* (o de 0 a *N* − 1). En la fórmula del MAE falta el subíndice en la predicción (ȳᵢ).
 3. **2.3.3 (gradient boosting):** el paso sobre regularización ("la combinación lineal de predictores débiles (con mayor residuo) tenga un coeficiente asociado menor") no describe el método. La regularización principal es la **tasa de aprendizaje** (*shrinkage*), que escala por igual la contribución de cada árbol nuevo; a eso se suman la profundidad máxima y el submuestreo.
 4. **2.3 (introducción):** los ejemplos de aplicación (clasificación de textos, reconocimiento de entidades, síntesis de voz) no se relacionan con el trabajo; conviene reemplazarlos por aplicaciones en transporte.
-5. **2.2.3.2:** verificar el respaldo de Ryus (2013) para el término "presión de andén" (ver arriba).
+5. **2.2.3.2:** verificar que Ryus (2013) respalde los conceptos para los que se cita (ver arriba).
 
 ---
 
 ## Pendiente
 
-- **2.2.3.2 (presión del andén) y punto 3 de 2.2.2:** dependen de DM-05 (umbral de presión de andén).
+- **2.2.3.2 (frecuencia requerida):** falta relevar la capacidad por formación de cada línea y fijar la densidad de pie y la ocupación objetivo (DM-05, decisión pendiente 1).
 
 ---
 

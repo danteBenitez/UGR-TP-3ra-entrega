@@ -15,7 +15,7 @@ Registro de los cambios de método, correcciones y reinterpretaciones del análi
 - **Impacto en el marco teórico:** Ninguno. Sí en la sección de resultados y discusión (ver DM-02 y DM-03).
 
 ## DM-02 · Reinterpretación de la presión de andén
-- **Estado:** Implementada (2026-11-04, commit `6a9b3bb`); el umbral sigue en revisión (ver DM-05)
+- **Estado:** Implementada (2026-11-04, commit `6a9b3bb`); la métrica se reemplaza por la frecuencia mínima requerida (ver DM-05)
 - **Tipo:** Reinterpretación de un resultado
 - **Cambio:** Con los datos corregidos, los 750 intervalos críticos ocurren todos en Constitución, el 92% entre las 07:00 y las 10:00 y casi todos en sábados. Se elimina la afirmación de saturación generalizada en nodos de transbordo durante fines de semana; el hallazgo se interpreta como persistencia del viaje laboral matutino de los sábados en la cabecera de la Línea C.
 - **Impacto en el marco teórico:** La discusión no puede apoyarse en la idea de que la reducción de frecuencias de fin de semana satura los nodos de transbordo en general.
@@ -161,10 +161,76 @@ Corresponde a la clasificación binaria actual, con permutación no estratificad
 ### Decisiones pendientes
 Ninguna.
 
-## DM-05 · Umbral de presión de andén
-- **Estado:** Propuesta (pendiente de discusión)
-- **Problema:** El umbral de 1.200 pax / 15 min compara los ingresos totales de la estación (ambos sentidos) con la capacidad de despacho estimada por sentido, y sus supuestos (frecuencia, capacidad por formación) no tienen fuente citada.
-- **Impacto en el marco teórico:** A definir según la alternativa que se adopte.
+## DM-05 · De "presión de andén" a frecuencia mínima requerida
+- **Estado:** Aceptada (2026-11-05), pendiente de implementar. Requiere relevar la capacidad de las formaciones (ver *Datos necesarios*).
+- **Tipo:** Cambio de métrica operativa y del Objetivo Específico 4
+
+### Problema
+La métrica actual compara los ingresos de cada estación por ventana de 15 minutos con un umbral único de 1.200 pasajeros. El umbral sólo se justifica en un comentario del código: frecuencias de 8 a 12 minutos en días no laborables, formaciones de cinco coches con 900–1.000 pasajeros "a capacidad de diseño" y 1,2–1,5 trenes por ventana **por sentido**. Tiene seis problemas:
+
+| Problema | ¿Se resuelve con una fuente? |
+|---|---|
+| **1. Capacidad por formación sin fuente.** "Capacidad de diseño" admite densidades de pie muy distintas (confortable ≈ 4 pax/m², de aglomeración ≈ 6 o más), y el material rodante difiere entre líneas y cambió durante 2014–2019 | **Sí:** capacidad por línea según el material rodante publicado, con una densidad explícita |
+| **2. Frecuencia supuesta.** Los 8–12 minutos se asumen para todas las líneas y horarios. El operador publica los cronogramas actuales, pero en 2014–2019 operaba Metrovías, con otros cronogramas | **Parcialmente:** los históricos podrían recuperarse de archivos web o informes de SBASE |
+| **3. Sentidos.** Los ingresos de una estación intermedia abordan trenes en ambos sentidos, por lo que la capacidad ofrecida allí es del orden del doble de la de un sentido. En una **cabecera** todos abordan en un único sentido y la comparación es correcta | **Sí:** contando los sentidos servidos por cada estación |
+| **4. Pasajeros a bordo.** En una estación intermedia el tren llega parcialmente ocupado; la capacidad libre es la capacidad menos la carga, que sin registros de egreso es **desconocida** | **No:** es una propiedad de los datos. Sólo en las cabeceras el tren parte vacío |
+| **5. Combinaciones.** Quienes transbordan dentro del área paga no pasan por molinete, por lo que los ingresos subestiman los abordajes en estaciones de combinación | **No:** se declara como limitación |
+| **6. Umbral único.** La capacidad por ventana depende de la línea, el tipo de día y la franja horaria | **Sí**, una vez resueltos los puntos 1 y 2 |
+
+El problema 4 no es de fuentes: aun con capacidades y cronogramas exactos, en una estación intermedia la comparación sólo da una **cota inferior** de la ocupación.
+
+### Decisión
+Se invierte la pregunta. En lugar de comparar la demanda con una oferta que habría que suponer, se calcula la **frecuencia mínima requerida** para atender la demanda proyectada (opción C de las evaluadas).
+
+Para cada línea *l*, tipo de día *d* y ventana *t* de la temporada proyectada:
+
+$$f_{\text{req}}(l, d, t) = \max_{s \in l} \frac{k_s \cdot B(s, d, t)}{C_l \cdot \varphi}$$
+
+donde:
+- *B(s, d, t)* son los ingresos proyectados de la estación *s* en la ventana (modelo de DM-06);
+- *C_l* es la capacidad por formación de la línea;
+- *φ* es la ocupación objetivo;
+- *k_s* = 1 en las **cabeceras** (todos los ingresos abordan en un sentido) y *k_s* = ½ en las **estaciones intermedias** (reparto parejo entre sentidos, el supuesto más favorable).
+
+El resultado se expresa en trenes por ventana de 15 minutos o como intervalo máximo entre trenes (15 / *f*<sub>req</sub> minutos).
+
+**Interpretación:**
+- **En las cabeceras** (Plaza de Mayo y San Pedrito en la Línea A; Leandro N. Alem y Juan Manuel de Rosas en la B; Retiro y Constitución en la C) el tren parte vacío y la frecuencia requerida es **exacta**, salvo por los transbordos.
+- **En las estaciones intermedias** es una **cota inferior**. La frecuencia real necesaria es mayor, porque el tren llega con pasajeros y porque el reparto entre sentidos no suele ser parejo. Si una estación intermedia ya exige una frecuencia alta, la exigencia real es al menos esa.
+- La frecuencia se fija por línea, no por estación. La **estación determinante** es la que impone el máximo en cada línea, tipo de día y franja.
+
+### Ventajas
+- Se expresa en la variable de decisión del problema: la frecuencia, que la introducción del documento identifica como "la principal palanca operativa".
+- **No requiere los cronogramas de 2014–2019,** sólo la capacidad de las formaciones, que es documentable.
+- Se integra con el modelo de planificación (DM-06): la proyección de la próxima temporada da directamente la frecuencia mínima por línea, tipo de día y franja horaria.
+- Hace explícita la limitación por ausencia de egresos, en lugar de ocultarla en un umbral.
+
+### Datos necesarios
+- **Capacidad por formación de cada línea** (*C_l*), según el material rodante publicado (*Material rodante – Buenos Aires Ciudad*, ya citado, o fichas técnicas del operador o los fabricantes). Si una línea cambió de flota durante 2014–2019, se usa la capacidad del período correspondiente.
+- **Densidad de pie** con la que se define la capacidad, tomada de un estándar documentado; por ejemplo, los niveles de servicio del *Transit Capacity and Quality of Service Manual* (Ryus, 2013).
+
+### Categorización de estaciones (OE4)
+Se basa en la frecuencia requerida, con reglas explícitas aplicadas por código:
+- **Estaciones determinantes:** las que fijan la frecuencia de su línea en algún tipo de día y franja, con la proporción de ventanas en que lo hacen.
+- **Exigencia relativa:** frecuencia requerida por la estación respecto de la de su línea, por tipo de día.
+- El detalle de las categorías y sus cortes se define al implementar, de modo que tabla y figura se generen con las mismas reglas.
+
+### Impacto en los objetivos
+- **Objetivo Específico 4:** "Proponer una categorización de las estaciones según la frecuencia mínima requerida para atender la demanda proyectada, identificando las estaciones que determinan la frecuencia de cada línea por tipo de día y franja horaria, con el fin de orientar la optimización de la frecuencia de la línea completa."
+
+### Impacto en el marco teórico
+- **2.2.3.2 (presión del andén):** se reemplaza por "Frecuencia requerida y estación determinante": la relación entre demanda, capacidad por formación, ocupación objetivo y frecuencia, y el carácter de cota inferior en estaciones intermedias. La noción de presión de andén puede conservarse como motivación.
+- **2.2.3.3 (frecuencia de despacho):** se conserva; pasa a ser el concepto central de la métrica.
+- **2.2.2, punto 3 (ausencia de egresos):** se reformula. La métrica sustituta ya no es la presión de andén sino la frecuencia requerida, exacta en cabeceras y cota inferior en el resto.
+- **Nueva referencia:** el estándar de densidad de pie y la fuente de capacidad del material rodante.
+
+### Impacto en la metodología y los resultados
+- **3.8:** la presión de andén se reemplaza por la frecuencia mínima requerida y la categorización por estación determinante.
+- **Sección 4 (4.5.2):** la Fig. 4.10 pasa a mostrar la frecuencia requerida por línea, tipo de día y franja; la Tabla 4.8, la categorización.
+
+### Decisiones pendientes
+1. **Ocupación objetivo** (*φ*): definir si la capacidad se toma a una densidad confortable con *φ* = 1, o a la capacidad nominal con un factor de planificación (p. ej., 0,8).
+2. **Contraste con los cronogramas publicados (opcional).** Comparar la frecuencia requerida con la programada como validación independiente. Los cronogramas actuales del operador corresponden a otro período; usarlos exige declararlo como supuesto.
 
 ## DM-06 · Reorientación del modelo predictivo hacia la planificación de cronogramas
 - **Estado:** Aceptada (2026-11-04), pendiente de implementar. Afecta el trabajo de modelado de la rama `origin/model`.

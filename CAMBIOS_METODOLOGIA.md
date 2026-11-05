@@ -41,7 +41,7 @@ Dos criterios que la Sección 3 debe explicitar. No requieren una decisión prop
 | **3.5 Fase 5: características** | Mayor | Dos objetivos (volumen y forma), variables a la fecha de origen, sólo rezagos estacionales; se eliminan los horizontes de uno y varios pasos | DM-06 |
 | **3.6 Fase 6: modelado** | Moderado–mayor | Modelos de referencia en lugar de la regresión lineal; XGBoost sobre el cociente de volumen; predicción = volumen × forma | DM-06 |
 | **3.7 Fase 7: evaluación** | Moderado–mayor | Origen móvil por temporada; métricas por ventana y por perfil; tres tipos de día | DM-06 |
-| **3.8 Fase 8: métricas operativas** | Moderado + pendiente | Sin desplazamiento de picos; presión de andén según DM-05; categorización por reglas explícitas | DM-05, DM-06, DM-07 |
+| **3.8 Fase 8: métricas operativas** | Mayor | Sin desplazamiento de picos; la presión de andén se reemplaza por la frecuencia mínima requerida; categorización por estación determinante | DM-05, DM-06, DM-07 |
 | **3.9 Herramientas** | Menor | Bibliotecas efectivamente usadas, entorno reproducible, notebook único y registro de decisiones | — |
 
 ---
@@ -70,7 +70,7 @@ Reemplazar la estrategia general ("estimar una función que, a partir de caracte
 | 5. Ingeniería de características | Volumen diario y forma; variables a la fecha de origen; rezagos estacionales | OE2 |
 | 6. Modelado | Modelos de referencia y XGBoost sobre el volumen; recomposición volumen × forma | OE2 |
 | 7. Evaluación | Origen móvil por temporada; métricas por ventana y por perfil | OE2 |
-| 8. Métricas operativas proyectadas | Retención y distribución horaria proyectadas; presión de andén y categorización de estaciones | OE3, OE4 |
+| 8. Métricas operativas proyectadas | Retención y distribución horaria proyectadas; frecuencia mínima requerida y categorización de estaciones | OE3, OE4 |
 
 ### 3.2 Fases 1 y 2: comprensión del problema y adquisición de datos
 - **Unidad de análisis:** distinguir dos niveles.
@@ -130,8 +130,9 @@ Se reescribe. Contenido:
 ### 3.8 Fase 8: métricas operativas proyectadas
 - **Ratio de retención:** se calcula sobre las proyecciones para temporadas no vistas por el modelo. Ya no reproduce valores observados (DM-06).
 - **Distribución horaria:** reemplaza al desplazamiento de las horas pico. Se compara el perfil proyectado de cada tipo de día con TV y la curva de diferencias (DM-07).
-- **Presión de andén:** pendiente de DM-05.
-- **Categorización de estaciones:** debe definirse con **reglas explícitas aplicadas por código** sobre las proyecciones, de modo que tablas y figuras no puedan contradecirse. Sus criterios dependen de DM-05.
+- **Frecuencia mínima requerida** (reemplaza a la presión de andén, DM-05): para cada línea, tipo de día y ventana, el máximo entre estaciones de los ingresos proyectados dividido por la capacidad útil por formación (capacidad × ocupación objetivo). Los ingresos cuentan completos en las cabeceras y a la mitad en las estaciones intermedias (reparto parejo entre sentidos). Se expresa en trenes por ventana o como intervalo máximo entre trenes. Es exacta en las cabeceras y una cota inferior en las estaciones intermedias, por la carga a bordo desconocida y el reparto real entre sentidos.
+- **Categorización de estaciones:** por **estación determinante** (la que fija la frecuencia de su línea en cada tipo de día y franja) y por exigencia relativa respecto de su línea, con **reglas explícitas aplicadas por código** sobre las proyecciones, de modo que tablas y figuras no puedan contradecirse.
+- **Contraste con los cronogramas publicados** (opcional): como validación independiente, declarando la diferencia de período si se usan los cronogramas actuales.
 
 ### 3.9 Herramientas y reproducibilidad
 - **Bibliotecas:** pandas, NumPy, SciPy, matplotlib y seaborn; **holidays** (fuente del calendario de feriados, relevante para DM-03); **XGBoost** (modelado); pyarrow (formato Parquet). scikit-learn puede dejar de mencionarse si no se usa (dependía de la regresión Ridge).
@@ -160,5 +161,5 @@ Al reescribirse, cada parte de la Sección 3 debe corresponderse con el marco te
 
 ## Pendiente
 
-- **DM-05 (umbral de presión de andén):** afecta 3.8 (presión de andén y categorización).
+- **Datos para la frecuencia requerida (DM-05):** capacidad por formación de cada línea, densidad de pie y ocupación objetivo. Afecta 3.8.
 - **Definición de temporada (DM-06, decisión pendiente 1):** afecta 3.2 (horizonte), 3.5 (fecha de origen de las variables) y 3.7 (temporadas de evaluación).
