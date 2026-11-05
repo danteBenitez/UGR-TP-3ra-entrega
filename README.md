@@ -45,6 +45,7 @@ EDA/
 ├── PLAN.md                             # Consigna del análisis
 ├── DECISIONES_METODOLOGICAS.md         # Registro de cambios de método y su impacto en el marco teórico
 ├── CAMBIOS_MARCO_TEORICO.md            # Guía de cambios a la Sección 2 (Marco teórico) según las decisiones
+├── CAMBIOS_METODOLOGIA.md              # Guía de cambios a la Sección 3 (Metodología) según las decisiones
 ├── ESTRUCTURA_SECCION_4.md             # Esqueleto de la Sección 4 (Propuesta de solución) del documento final
 ├── experimentos/                       # Scripts exploratorios que respaldan DM-06 (modelo por temporada)
 └── .gitignore                          # Exclusión de datos crudos (6.7 GB) y temporales
