@@ -280,7 +280,7 @@ Las últimas cuatro columnas miden la calidad del perfil por estación × tipo d
   - 3.6: se incorporan la línea base y la estructura volumen × forma.
   - 3.7: se adopta la evaluación con origen móvil por temporada.
   - 3.8: las métricas operativas se calculan sobre las proyecciones.
-  - El cálculo del desplazamiento de horas pico debe redefinirse sin ventanas forzadas.
+  - Se elimina el cálculo del desplazamiento de horas pico (ver DM-07).
 - **Código (`origin/model`):**
   - *Reutilizable:* la preparación de datos (grilla regular de 76 ventanas por día, detección de cierres y variables geográficas).
   - *A eliminar o reescribir:* los rezagos recientes, los objetivos de varios pasos y el cálculo de picos con ventanas forzadas.
@@ -293,3 +293,33 @@ Las últimas cuatro columnas miden la calidad del perfil por estación × tipo d
 1. **Definición de temporada.** Se usaron trimestres calendario. El primer trimestre mezcla el valle estival de enero y febrero con la reactivación de marzo, y es donde más difieren las variantes. Idealmente, las temporadas deberían coincidir con los períodos en que el operador modifica sus cronogramas; si no se conocen, se usan trimestres o se separa el verano (enero–febrero) como período propio.
 2. **Resultado si el aprendizaje automático no supera la línea base.** Los experimentos muestran una mejora modesta pero consistente (V2 sobre V1 en error diario y retención). Si al implementarlo la mejora no se confirma, se informará como hallazgo: con horizonte de una temporada, la estructura regular del calendario explica casi toda la demanda que un cronograma puede atender. El modelo V1 × forma es en sí un modelo estadístico válido.
 3. **Sesgo de V2.** Diagnosticar y corregir la sobreestimación de ~5,5%. Opciones: entrenar sólo con años recientes, incorporar una variable de tendencia o combinar V2 con V1. Corregido el sesgo, V2 debería superar a V1 en todas las métricas; si no lo hace, se adopta V1.
+
+## DM-07 · De "desplazamiento de las horas pico" a "distribución horaria de la demanda"
+- **Estado:** Aceptada (2026-11-05), pendiente de incorporar al documento.
+- **Tipo:** Reformulación del Objetivo Específico 3 y de la hipótesis
+
+### Problema
+El objetivo específico 3, la hipótesis y la descripción del tema (1.2) usan el "desplazamiento de las horas pico" como una de las dos dimensiones de la variación. El concepto presupone que existe un pico único que se traslada en el tiempo, y eso no se cumple en esta red:
+- **Días hábiles:** dos picos (matutino y vespertino).
+- **Sábados:** una meseta centrada en el mediodía.
+- **Domingos y feriados:** un máximo al atardecer.
+
+El perfil no laborable no es una versión desplazada de ninguno de los picos hábiles, sino una organización distinta de la demanda. Por eso el cálculo anterior necesitó forzar ventanas de búsqueda y produjo un desplazamiento de "más de 9 horas" (DM-06). La métrica está mal definida para estos datos, no sólo mal calculada.
+
+Además, lo que el trabajo busca establecer es si la distribución de la demanda en días no laborables difiere de la de días hábiles, no si un pico particular se movió.
+
+### Decisión
+Se reemplaza el "desplazamiento de las horas pico" por la **distribución horaria de la demanda**, medida con los instrumentos de DM-04:
+- **Magnitud de la diferencia:** distancia de variación total (TV) entre perfiles normalizados.
+- **Localización:** curva de diferencias por ventana, que indica qué franjas concentran más o menos demanda en cada tipo de día (p. ej., en Constitución, exceso hábil entre las 07:00 y las 08:15 y exceso no laborable hacia las 19:00). Para la diagramación es más útil que un único número de horas, porque señala dónde reforzar o reducir el servicio.
+- **Opcional:** los horarios de los máximos reales de cada tipo de día pueden informarse como dato descriptivo, sin calcular un desplazamiento ni someterlo a contraste.
+
+### Propuestas de redacción
+- **Objetivo Específico 3:** "Cuantificar el ratio de retención y la diferencia en la distribución horaria de la demanda entre tipos de día, a partir de las proyecciones del modelo para temporadas no observadas" (en conjunto con DM-06).
+- **Hipótesis:** "La demanda de pasajeros en días no laborables en la red de subtes es estructuralmente no uniforme y presenta diferencias significativas estación por estación, tanto en el ratio de retención respecto de los días hábiles como en la distribución horaria de la demanda."
+- **Descripción del tema (1.2):** reemplazar "el desplazamiento de las horas pico (la alteración cronológica de los momentos de mayor afluencia)" por "la distribución horaria de la demanda (cómo se reparte la afluencia a lo largo del día)".
+
+### Impacto en el marco teórico y la metodología
+- **2.2.3 (métricas de demanda):** se define la distribución horaria como el perfil normalizado (proporción de la demanda diaria en cada ventana), con la TV como medida de diferencia (DM-04). No se agrega una métrica de desplazamiento de picos.
+- **3.8 (métricas operativas):** se elimina el desplazamiento de las horas pico; la comparación de perfiles proyectados se hace con TV y la curva de diferencias.
+- **Sección 4:** se elimina la subsección propia del desplazamiento de picos; su contenido queda cubierto por el análisis de forma (ver `ESTRUCTURA_SECCION_4.md`).
