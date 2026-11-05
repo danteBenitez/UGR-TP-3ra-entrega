@@ -8,12 +8,12 @@ Este repositorio contiene el pipeline analítico y el código fuente para el est
 ## 📊 Principales Hallazgos y Resultados
 
 1. **Volumen Procesado:** Más de 70 millones de registros de molinete (41 millones correspondientes a las Líneas A, B y C), consolidados en **44 estaciones** oficiales en intervalos de 15 minutos y agregados diarios.
-2. **Heterogeneidad Estadística (Kolmogorov-Smirnov):** Se rechazó $H_0$ en el **100% de las 44 estaciones** ($p < 10^{-15}$ en todas; $D$ entre 0,30 y 0,76), indicando que las distribuciones de demanda por intervalo en días no laborables difieren de las de días hábiles.
-3. **Ratio Global de Retención:** La demanda no laborable retiene en promedio un **27,86%** del flujo hábil (caída del 72,14%).
-   - *Mayor Retención (Polos recreativos / transbordo):* **Carlos Gardel (62,22%)**, **Independencia (38,39%)**, **Alberti (36,41%)**, **Retiro (36,26%)** y **Plaza Miserere (36,15%)**.
-   - *Mayor Contracción (Distrito financiero / administrativo):* **Diagonal Norte (13,27%)**, **Florida (13,63%)** y **Plaza de Mayo (14,65%)**.
-   - *Sábado ≠ Domingo:* los sábados retienen el **38,48%** de la demanda hábil, los domingos el **18,78%** y los feriados el **22,87%**.
-4. **Presión de Andén:** Con un umbral supuesto de 1.200 pax / 15 min, los 750 intervalos críticos en días no laborables ocurren todos en **Constitución**, el 92% entre las 07:00 y las 10:00 y mayoritariamente en sábados (688; el resto en feriados, ninguno en domingos), con tendencia creciente en el período.
+2. **Tres tipos de día:** el análisis distingue días **hábiles**, **sábados** y **domingos y feriados**, en coincidencia con los cronogramas del operador (ver `DECISIONES_METODOLOGICAS.md`, DM-03).
+3. **Heterogeneidad Estadística (Kolmogorov-Smirnov):** Se rechazó $H_0$ en las **44 estaciones**, tanto para hábil frente a sábado ($D$ entre 0,27 y 0,76) como para hábil frente a domingo-feriado ($D$ entre 0,34 y 0,77), con $p < 10^{-15}$. Este contraste será reemplazado según DM-04.
+4. **Ratio de Retención:** la red retiene el **38,58%** de la demanda hábil los sábados y el **19,60%** los domingos y feriados.
+   - *Mayor Retención (Polos recreativos / transbordo):* **Carlos Gardel** (72,29% los sábados; 54,14% los domingos y feriados), **Alberti** y **Plaza Miserere** los sábados (54,14% y 53,01%), **Independencia** y **Retiro** los domingos y feriados (31,69% y 28,14%).
+   - *Mayor Contracción (Distrito financiero / administrativo):* **Diagonal Norte** y **Plaza de Mayo** los sábados (18,70% y 18,76%); **Florida** y **Diagonal Norte** los domingos y feriados (9,04% y 9,18%).
+5. **Presión de Andén:** Con un umbral supuesto de 1.200 pax / 15 min, los 750 intervalos críticos en días no laborables ocurren todos en **Constitución**, el 92% entre las 07:00 y las 10:00 y casi todos en sábados (727; 23 en domingos y feriados), con tendencia creciente en el período. Esta métrica será reemplazada por la frecuencia mínima requerida (DM-05).
 
 ---
 

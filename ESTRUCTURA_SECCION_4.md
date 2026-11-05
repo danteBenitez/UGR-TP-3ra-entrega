@@ -76,7 +76,7 @@ La selección de estaciones se justifica por los grupos observados en los datos,
 | **Tabla 4.2.** Retención por línea y tipo de día | Ingresos diarios medios y ratio de retención de Sábado y de Domingo-Feriado respecto de Hábil, con IC 95% por *bootstrap* | Notebook 5 (agregar IC) | 🔧 DM-03 y DM-04 |
 | **Fig. 4.5** | Retención por estación con IC (44 estaciones ordenadas; Sábado y Domingo-Feriado) | Nueva | 🔧 DM-04 |
 
-**Cómo se interpreta:** brecha territorial entre el Microcentro (retención de 13–15%) y los polos recreativos y de transbordo.
+**Cómo se interpreta:** brecha territorial entre el Microcentro (retención de ~19% los sábados y de 9–12% los domingos y feriados) y los polos recreativos y de transbordo.
 
 ### 4.3.2. Distribución horaria: distancia entre perfiles
 | Elemento | Contenido | Fuente | Estado |

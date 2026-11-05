@@ -4,7 +4,7 @@ Se identificaron los intervalos de 15 minutos en fines de semana y feriados dond
 
 - **Total de eventos de alta presión registrados (2014-2019):** 750 intervalos.
 - **Estaciones con eventos:** Constitución (Línea C): 750.
-- **Distribución por tipo de día:** Sábado: 688, Feriado: 62.
+- **Distribución por tipo de día:** Sábado: 727, Domingo-Feriado: 23.
 - **Franja horaria:** 92.1% de los eventos ocurre entre las 07:00 y las 10:00 (ventanas 07:00 a 09:45).
 - **Evolución anual:** 2014: 18, 2015: 41, 2016: 75, 2017: 140, 2018: 258, 2019: 218.
 

@@ -21,7 +21,7 @@ Registro de los cambios de método, correcciones y reinterpretaciones del análi
 - **Impacto en el marco teórico:** La discusión no puede apoyarse en la idea de que la reducción de frecuencias de fin de semana satura los nodos de transbordo en general.
 
 ## DM-03 · Clasificación de tipos de día: Hábil / Sábado / Domingo-Feriado
-- **Estado:** Aceptada (pendiente de implementar en el notebook). Hoy el notebook sólo incluye la desagregación descriptiva (sección 5.1); los análisis siguen usando la dicotomía Hábil / No Laborable.
+- **Estado:** Implementada (2026-11-05). La clasificación se calcula con `agregar_calendario()` (notebook, sección 2.2), que se aplica en la ingesta y al cargar los datos cacheados; la sección 2.6 muestra los días por tipo y las excepciones. Todas las tablas y figuras usan las tres categorías. *Nota:* las cifras de evidencia de esta entrada son las del análisis exploratorio previo (Jueves Santo todavía contado como feriado); con la clasificación implementada, la retención de red es 38,58% (Sábado) y 19,60% (Domingo-Feriado), y la de los feriados, 21,95%.
 - **Tipo:** Cambio de clasificación
 
 ### Decisión
