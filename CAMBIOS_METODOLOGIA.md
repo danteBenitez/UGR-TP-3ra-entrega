@@ -161,5 +161,5 @@ Al reescribirse, cada parte de la Sección 3 debe corresponderse con el marco te
 
 ## Pendiente
 
-- **Datos para la frecuencia requerida (DM-05):** capacidad por formación de cada línea, densidad de pie y ocupación objetivo. Afecta 3.8.
+- **Datos para la frecuencia requerida (DM-05):** capacidad por coche y coches por formación de la flota actual de cada línea, densidad de pie y ocupación objetivo. Sólo afectan la escala absoluta de 3.8: la categorización de estaciones no depende de ellos.
 - **Definición de temporada (DM-06, decisión pendiente 1):** afecta 3.2 (horizonte), 3.5 (fecha de origen de las variables) y 3.7 (temporadas de evaluación).

@@ -231,7 +231,7 @@ Reformular la introducción: la comparación entre tipos de día se hace sobre d
 
 ## Pendiente
 
-- **2.2.3.2 (frecuencia requerida):** falta relevar la capacidad por formación de cada línea y fijar la densidad de pie y la ocupación objetivo (DM-05, decisión pendiente 1).
+- **2.2.3.2 (frecuencia requerida):** falta relevar la capacidad de la flota actual de cada línea (capacidad por coche y coches por formación) y fijar la densidad de pie y la ocupación objetivo (DM-05). La capacidad se presenta como supuesto de referencia: fija la escala absoluta, no la categorización de estaciones.
 
 ---
 

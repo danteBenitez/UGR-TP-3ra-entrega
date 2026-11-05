@@ -162,7 +162,7 @@ Corresponde a la clasificación binaria actual, con permutación no estratificad
 Ninguna.
 
 ## DM-05 · De "presión de andén" a frecuencia mínima requerida
-- **Estado:** Aceptada (2026-11-05), pendiente de implementar. Requiere relevar la capacidad de las formaciones (ver *Datos necesarios*).
+- **Estado:** Aceptada (2026-11-05), pendiente de implementar. Requiere relevar la capacidad de la flota actual de cada línea (ver *Datos necesarios*).
 - **Tipo:** Cambio de métrica operativa y del Objetivo Específico 4
 
 ### Problema
@@ -205,9 +205,18 @@ El resultado se expresa en trenes por ventana de 15 minutos o como intervalo má
 - Se integra con el modelo de planificación (DM-06): la proyección de la próxima temporada da directamente la frecuencia mínima por línea, tipo de día y franja horaria.
 - Hace explícita la limitación por ausencia de egresos, en lugar de ocultarla en un umbral.
 
+### Alcance y papel de la capacidad (2026-11-05)
+La métrica se aplica a las **proyecciones del modelo** para una temporada, no a la demanda histórica. Su propósito es dar un dominio de aplicación a las predicciones y sostener la importancia de ajustar el nivel de frecuencia; no es una auditoría de la oferta pasada. En consecuencia:
+- **Capacidad de referencia: la flota actual** publicada por el operador, que es la que atendería una temporada proyectada. No se reconstruye la capacidad año por año de 2014–2019.
+- **La categorización de estaciones no depende de la capacidad.** *C_l* y *φ* son constantes dentro de cada línea, por lo que la estación determinante (la de mayor demanda a absorber) es la misma cualquiera sea la capacidad. Lo mismo vale para las comparaciones entre tipos de día y franjas dentro de una línea: la frecuencia requerida es proporcional a la demanda.
+- **La capacidad sólo fija la escala absoluta:** traduce "esta estación determina la frecuencia" en "requiere *N* trenes por ventana de 15 minutos" o "un tren cada *X* minutos". Los valores absolutos se presentan como ilustración del orden de magnitud, con la capacidad declarada como supuesto.
+
+*Nota sobre la flota histórica:* entre 2014 y 2019 el servicio lo operaba Metrovías S.A., que en diciembre de 2021 pasó a denominarse Emova con el inicio de una nueva concesión. El material rodante es propiedad de la Ciudad, por lo que el cambio de operador no implica un cambio de flota. Durante el período, las tres líneas renovaron o combinaron flotas (Línea A: CITIC-CNR Serie 200, con flotas temporales Fiat-Materfer y Siemens-O&K; Línea B: Mitsubishi ex-Eidan 500, CAF 5000 y CAF 6000; Línea C: Nagoya 250/300/1200, Nagoya 5000 y, desde ~2018, CITIC-CNR Serie 200). Reconstruir una capacidad por línea y año sería necesario para comparar la demanda con la oferta histórica, lo que esta métrica no hace.
+
 ### Datos necesarios
-- **Capacidad por formación de cada línea** (*C_l*), según el material rodante publicado (*Material rodante – Buenos Aires Ciudad*, ya citado, o fichas técnicas del operador o los fabricantes). Si una línea cambió de flota durante 2014–2019, se usa la capacidad del período correspondiente.
-- **Densidad de pie** con la que se define la capacidad, tomada de un estándar documentado; por ejemplo, los niveles de servicio del *Transit Capacity and Quality of Service Manual* (Ryus, 2013).
+- **Capacidad por coche de la flota actual de cada línea,** según el material rodante publicado por el operador o la Ciudad (*Material rodante – Buenos Aires Ciudad*, ya citado) o las fichas técnicas de los fabricantes. Si una línea opera hoy con flotas mixtas, se toma la **menor capacidad en servicio**: es la opción conservadora, porque da una frecuencia requerida mayor.
+- **Coches por formación** de cada línea, para pasar de capacidad por coche a capacidad por formación (*C_l*).
+- **Densidad de pie** con la que está definida la capacidad publicada. Si las fuentes usan densidades distintas o no la declaran, se recalcula a partir de la superficie del coche con una densidad común tomada de un estándar documentado (por ejemplo, los niveles de servicio del *Transit Capacity and Quality of Service Manual*; Ryus, 2013). Se vincula con la decisión pendiente sobre la ocupación objetivo.
 
 ### Categorización de estaciones (OE4)
 Se basa en la frecuencia requerida, con reglas explícitas aplicadas por código:
@@ -230,7 +239,7 @@ Se basa en la frecuencia requerida, con reglas explícitas aplicadas por código
 
 ### Decisiones pendientes
 1. **Ocupación objetivo** (*φ*): definir si la capacidad se toma a una densidad confortable con *φ* = 1, o a la capacidad nominal con un factor de planificación (p. ej., 0,8).
-2. **Contraste con los cronogramas publicados (opcional).** Comparar la frecuencia requerida con la programada como validación independiente. Los cronogramas actuales del operador corresponden a otro período; usarlos exige declararlo como supuesto.
+2. **Contraste con los cronogramas publicados (opcional).** Comparar la frecuencia requerida con la programada actualmente por el operador, como ilustración de la brecha entre oferta y demanda proyectada. Las proyecciones se construyen con datos de 2014–2019 y los cronogramas son actuales; la comparación debe presentarse con esa salvedad.
 
 ## DM-06 · Reorientación del modelo predictivo hacia la planificación de cronogramas
 - **Estado:** Aceptada (2026-11-04), pendiente de implementar. Afecta el trabajo de modelado de la rama `origin/model`.

@@ -129,8 +129,8 @@ Texto breve, sin figura: horizonte de una temporada, información admisible, eva
 ### 4.5.2. Frecuencia mínima requerida y categorización de estaciones
 | Elemento | Contenido | Fuente | Estado |
 |---|---|---|---|
-| **Fig. 4.10** | Frecuencia mínima requerida (o intervalo máximo entre trenes) por línea, tipo de día y franja horaria, para la temporada proyectada; distinguiendo valores exactos (cabeceras) y cotas inferiores (estaciones intermedias) | Nueva | 🔧 DM-05 y DM-06 · ⏳ capacidad por formación |
-| **Tabla 4.8.** Categorización de estaciones | Estaciones determinantes por línea, tipo de día y franja, con la proporción de ventanas en que fijan la frecuencia, y exigencia relativa respecto de su línea | Nueva | Ídem |
+| **Fig. 4.10** | Frecuencia mínima requerida (o intervalo máximo entre trenes) por línea, tipo de día y franja horaria, para la temporada proyectada; distinguiendo valores exactos (cabeceras) y cotas inferiores (estaciones intermedias) | Nueva | 🔧 DM-05 y DM-06 · ⏳ capacidad de la flota actual (sólo para la escala absoluta) |
+| **Tabla 4.8.** Categorización de estaciones | Estaciones determinantes por línea, tipo de día y franja, con la proporción de ventanas en que fijan la frecuencia, y exigencia relativa respecto de su línea | Nueva | 🔧 DM-05 y DM-06 (no depende de la capacidad) |
 
 **Qué aporta:** traduce la proyección de demanda en la variable de decisión del problema, la frecuencia por línea, e identifica qué estaciones la determinan. La categorización sale de reglas aplicadas por código, de modo que tabla y figura no puedan contradecirse como en la versión anterior (Tabla 4.7 frente a Fig. 4.9).
 
@@ -164,5 +164,5 @@ Sirve de puente con las Conclusiones (Sección 5) sin introducir elementos nuevo
 1. **DM-03** (tres tipos de día) en el notebook → habilita 4.1, 4.2 y la Tabla 4.2.
 2. **DM-04** (retención con IC, TV y test de permutación) → habilita 4.3.1–4.3.3.
 3. **DM-06** (modelo volumen × forma, integrando y reescribiendo `origin/model`) → habilita 4.4 y 4.5.1.
-4. **DM-05** (frecuencia mínima requerida), una vez relevada la capacidad por formación → habilita 4.5.2.
+4. **DM-05** (frecuencia mínima requerida) → habilita la Tabla 4.8; la Fig. 4.10 requiere además la capacidad de la flota actual.
 5. Redacción de 4.6 y de las Conclusiones.
