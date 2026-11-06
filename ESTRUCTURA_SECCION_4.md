@@ -25,7 +25,7 @@ Esqueleto de la sección 4 del documento final, alineado con los objetivos (1.3)
 
 > En esta sección se presentan los resultados de aplicar la metodología descrita en la Sección 3 a los registros de ingreso por molinete de las Líneas A, B y C del Subte de Buenos Aires entre 2014 y 2019: más de 70 millones de registros, consolidados en ventanas de 15 minutos para las 44 estaciones de la red. El análisis se organiza en torno a una distinción central: la variación de la demanda entre tipos de día tiene dos dimensiones, el **volumen** (cuánta demanda se mantiene) y la **forma** (cómo se distribuye a lo largo del día), y cada una responde a una decisión distinta de la diagramación del servicio: cuántas formaciones despachar y en qué franjas.
 >
-> Los resultados se presentan en el orden de los objetivos específicos. Primero se describe la calidad de los datos y se caracterizan las curvas de demanda (Objetivo Específico 1). Luego se cuantifican el volumen y la forma de la variación entre tipos de día y se contrasta la hipótesis de heterogeneidad (Objetivos Específicos 1 y 3). A continuación se evalúa el modelo predictivo, orientado a planificar el cronograma de una temporada con la información disponible antes de su inicio (Objetivo Específico 2). Por último, se derivan de sus proyecciones las métricas operativas y la categorización de estaciones (Objetivos Específicos 3 y 4).
+> Los resultados se presentan en el orden de los objetivos específicos. Primero se describe la calidad de los datos y se caracterizan las curvas de demanda (Objetivo Específico 1). Luego se cuantifican el volumen y la forma de la variación entre tipos de día y se contrasta la hipótesis de heterogeneidad (Objetivos Específicos 1 y 3). A continuación se evalúa el modelo predictivo, orientado a planificar el cronograma de una temporada con la información disponible antes de su inicio (Objetivo Específico 2). Por último, se derivan de sus proyecciones las métricas operativas: la retención proyectada y la frecuencia mínima requerida por línea, con las estaciones que la determinan (Objetivos Específicos 3 y 4).
 
 ---
 
@@ -126,13 +126,13 @@ Texto breve, sin figura: horizonte de una temporada, información admisible, eva
 |---|---|---|---|
 | **Tabla 4.7.** Retención proyectada frente a observada por estación | Para las temporadas evaluadas de 2019, con el modelo adoptado (V1 × forma) | Notebook 7.3; `09_retencion_proyectada_vs_observada.md` | ✅ |
 
-### 4.5.2. Frecuencia mínima requerida y categorización de estaciones
+### 4.5.2. Frecuencia mínima requerida y estaciones determinantes
 | Elemento | Contenido | Fuente | Estado |
 |---|---|---|---|
-| **Fig. 4.10** | Frecuencia mínima requerida (o intervalo máximo entre trenes) por línea, tipo de día y franja horaria, para la temporada proyectada; distinguiendo valores exactos (cabeceras) y cotas inferiores (estaciones intermedias) | Nueva | 🔧 DM-05 y DM-06 · ⏳ capacidad de la flota actual (sólo para la escala absoluta) |
-| **Tabla 4.8.** Categorización de estaciones | Estaciones determinantes por línea, tipo de día y franja, con la proporción de ventanas en que fijan la frecuencia, y exigencia relativa respecto de su línea | Nueva | 🔧 DM-05 y DM-06 (no depende de la capacidad) |
+| **Fig. 4.10** | Curva de frecuencia mínima requerida a lo largo del día por línea y tipo de día, para la temporada proyectada, marcando la estación determinante en cada horario | Nueva | 🔧 DM-05 y DM-06 · ⏳ capacidad de la flota actual (sólo para la escala absoluta) |
+| **Tabla 4.8.** Estaciones determinantes | Para cada línea y tipo de día, las estaciones que determinan la frecuencia requerida y sus horarios (tabla descriptiva, sin umbrales) | Nueva | 🔧 DM-05 y DM-06 (no depende de la capacidad) |
 
-**Qué aporta:** traduce la proyección de demanda en la variable de decisión del problema, la frecuencia por línea, e identifica qué estaciones la determinan. La categorización sale de reglas aplicadas por código, de modo que tabla y figura no puedan contradecirse como en la versión anterior (Tabla 4.7 frente a Fig. 4.9).
+**Qué aporta:** traduce la proyección de demanda en la variable de decisión del problema, la frecuencia por línea, e identifica qué estaciones la determinan y cuándo. Tabla y figura salen del mismo cálculo, de modo que no pueden contradecirse como en la versión anterior (Tabla 4.7 frente a Fig. 4.9).
 
 ---
 

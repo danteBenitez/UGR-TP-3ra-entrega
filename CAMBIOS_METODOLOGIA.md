@@ -42,7 +42,7 @@ Tres criterios que la Sección 3 debe explicitar. No requieren una decisión pro
 | **3.5 Fase 5: características** | Mayor | Dos objetivos (volumen y forma), variables a la fecha de origen, sólo rezagos estacionales; se eliminan los horizontes de uno y varios pasos | DM-06 |
 | **3.6 Fase 6: modelado** | Moderado–mayor | Modelos de referencia en lugar de la regresión lineal; XGBoost sobre el cociente de volumen; predicción = volumen × forma | DM-06 |
 | **3.7 Fase 7: evaluación** | Moderado–mayor | Origen móvil por temporada; métricas por ventana y por perfil; tres tipos de día | DM-06 |
-| **3.8 Fase 8: métricas operativas** | Mayor | Sin desplazamiento de picos; la presión de andén se reemplaza por la frecuencia mínima requerida; categorización por estación determinante | DM-05, DM-06, DM-07 |
+| **3.8 Fase 8: métricas operativas** | Mayor | Sin desplazamiento de picos; la presión de andén se reemplaza por la frecuencia mínima requerida y las estaciones que la determinan | DM-05, DM-06, DM-07 |
 | **3.9 Herramientas** | Menor | Bibliotecas efectivamente usadas, entorno reproducible, notebook único y registro de decisiones | — |
 
 ---
@@ -71,7 +71,7 @@ Reemplazar la estrategia general ("estimar una función que, a partir de caracte
 | 5. Ingeniería de características | Volumen diario y forma; variables a la fecha de origen; rezagos estacionales | OE2 |
 | 6. Modelado | Modelos de referencia y XGBoost sobre el volumen; recomposición volumen × forma | OE2 |
 | 7. Evaluación | Origen móvil por temporada; métricas por ventana y por perfil | OE2 |
-| 8. Métricas operativas proyectadas | Retención y distribución horaria proyectadas; frecuencia mínima requerida y categorización de estaciones | OE3, OE4 |
+| 8. Métricas operativas proyectadas | Retención y distribución horaria proyectadas; frecuencia mínima requerida y estaciones determinantes | OE3, OE4 |
 
 ### 3.2 Fases 1 y 2: comprensión del problema y adquisición de datos
 - **Unidad de análisis:** distinguir dos niveles.
@@ -133,8 +133,8 @@ Se reescribe. Contenido:
 ### 3.8 Fase 8: métricas operativas proyectadas
 - **Ratio de retención:** se calcula sobre las proyecciones para temporadas no vistas por el modelo. Ya no reproduce valores observados (DM-06).
 - **Distribución horaria:** reemplaza al desplazamiento de las horas pico. Se compara el perfil proyectado de cada tipo de día con TV y la curva de diferencias (DM-07).
-- **Frecuencia mínima requerida** (reemplaza a la presión de andén, DM-05): para cada línea, tipo de día y ventana, el máximo entre estaciones de los ingresos proyectados dividido por la capacidad útil por formación (capacidad × ocupación objetivo). Los ingresos cuentan completos en las cabeceras y a la mitad en las estaciones intermedias (reparto parejo entre sentidos). Se expresa en trenes por ventana o como intervalo máximo entre trenes. Es exacta en las cabeceras y una cota inferior en las estaciones intermedias, por la carga a bordo desconocida y el reparto real entre sentidos.
-- **Categorización de estaciones:** por **estación determinante** (la que fija la frecuencia de su línea en cada tipo de día y franja) y por exigencia relativa respecto de su línea, con **reglas explícitas aplicadas por código** sobre las proyecciones, de modo que tablas y figuras no puedan contradecirse.
+- **Frecuencia mínima requerida** (reemplaza a la presión de andén, DM-05): un párrafo. Para cada línea, tipo de día y ventana, el máximo entre estaciones de los ingresos proyectados dividido por la capacidad útil por formación (capacidad × ocupación objetivo), expresado en trenes por ventana o como intervalo máximo entre trenes. La estación que impone el máximo es la **estación determinante**. Limitación en una oración: los ingresos no se desagregan por sentido y la carga a bordo es desconocida, por lo que es un indicador del orden de magnitud, exacto sólo en las cabeceras.
+- **Estaciones determinantes (OE4):** tabla descriptiva, generada por código a partir de las proyecciones, con las estaciones que determinan la frecuencia de cada línea por tipo de día y sus horarios. Sin umbrales ni cortes entre categorías.
 - **Contraste con los cronogramas publicados** (opcional): como validación independiente, declarando la diferencia de período si se usan los cronogramas actuales.
 
 ### 3.9 Herramientas y reproducibilidad
@@ -153,7 +153,7 @@ Al reescribirse, cada parte de la Sección 3 debe corresponderse con el marco te
 | Metodología | Marco teórico | Resultados |
 |---|---|---|
 | 3.2 Unidades de análisis y tipos de día | 2.2.3 (tipos de día) | 4.1 |
-| 3.3 Preparación | 2.2.3, 2.2.4.5 | 4.1 |
+| 3.3 Preparación | 2.2.3, 2.2.4.4 | 4.1 |
 | 3.4 Exploratorio y comparación | 2.2.4.1, 2.5.1–2.5.4 | 4.2, 4.3 |
 | 3.5–3.7 Modelo | 2.3.2–2.3.4, 2.4.1 | 4.4 |
 | 3.8 Métricas operativas | 2.2.4 | 4.5 |

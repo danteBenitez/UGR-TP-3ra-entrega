@@ -184,20 +184,12 @@ Se invierte la pregunta. En lugar de comparar la demanda con una oferta que habr
 
 Para cada línea *l*, tipo de día *d* y ventana *t* de la temporada proyectada:
 
-$$f_{\text{req}}(l, d, t) = \max_{s \in l} \frac{k_s \cdot B(s, d, t)}{C_l \cdot \varphi}$$
+$$f_{\text{req}}(l, d, t) = \max_{s \in l} \frac{B(s, d, t)}{C_l \cdot \varphi}$$
 
-donde:
-- *B(s, d, t)* son los ingresos proyectados de la estación *s* en la ventana (modelo de DM-06);
-- *C_l* es la capacidad por formación de la línea;
-- *φ* es la ocupación objetivo;
-- *k_s* = 1 en las **cabeceras** (todos los ingresos abordan en un sentido) y *k_s* = ½ en las **estaciones intermedias** (reparto parejo entre sentidos, el supuesto más favorable).
+donde *B(s, d, t)* son los ingresos proyectados de la estación *s* en la ventana (modelo adoptado en DM-06), *C_l* es la capacidad por formación de la línea y *φ* la ocupación objetivo. El resultado se expresa en trenes por ventana de 15 minutos o como intervalo máximo entre trenes (15 / *f*<sub>req</sub> minutos).
 
-El resultado se expresa en trenes por ventana de 15 minutos o como intervalo máximo entre trenes (15 / *f*<sub>req</sub> minutos).
-
-**Interpretación:**
-- **En las cabeceras** (Plaza de Mayo y San Pedrito en la Línea A; Leandro N. Alem y Juan Manuel de Rosas en la B; Retiro y Constitución en la C) el tren parte vacío y la frecuencia requerida es **exacta**, salvo por los transbordos.
-- **En las estaciones intermedias** es una **cota inferior**. La frecuencia real necesaria es mayor, porque el tren llega con pasajeros y porque el reparto entre sentidos no suele ser parejo. Si una estación intermedia ya exige una frecuencia alta, la exigencia real es al menos esa.
-- La frecuencia se fija por línea, no por estación. La **estación determinante** es la que impone el máximo en cada línea, tipo de día y franja.
+- La frecuencia se fija por línea, no por estación. La **estación determinante** es la que impone el máximo en cada línea, tipo de día y ventana.
+- **Limitación** (una oración en el documento): los ingresos no se desagregan por sentido y la carga a bordo es desconocida, por lo que la frecuencia requerida es un **indicador del orden de magnitud**, exacto sólo en las cabeceras, donde el tren parte vacío y todos los ingresos abordan en un sentido.
 
 ### Ventajas
 - Se expresa en la variable de decisión del problema: la frecuencia, que la introducción del documento identifica como "la principal palanca operativa".
@@ -208,7 +200,7 @@ El resultado se expresa en trenes por ventana de 15 minutos o como intervalo má
 ### Alcance y papel de la capacidad (2026-11-05)
 La métrica se aplica a las **proyecciones del modelo** para una temporada, no a la demanda histórica. Su propósito es dar un dominio de aplicación a las predicciones y sostener la importancia de ajustar el nivel de frecuencia; no es una auditoría de la oferta pasada. En consecuencia:
 - **Capacidad de referencia: la flota actual** publicada por el operador, que es la que atendería una temporada proyectada. No se reconstruye la capacidad año por año de 2014–2019.
-- **La categorización de estaciones no depende de la capacidad.** *C_l* y *φ* son constantes dentro de cada línea, por lo que la estación determinante (la de mayor demanda a absorber) es la misma cualquiera sea la capacidad. Lo mismo vale para las comparaciones entre tipos de día y franjas dentro de una línea: la frecuencia requerida es proporcional a la demanda.
+- **La identificación de estaciones determinantes no depende de la capacidad.** *C_l* y *φ* son constantes dentro de cada línea, por lo que la estación determinante (la de mayor demanda a absorber) es la misma cualquiera sea la capacidad. Lo mismo vale para las comparaciones entre tipos de día y horarios dentro de una línea: la frecuencia requerida es proporcional a la demanda.
 - **La capacidad sólo fija la escala absoluta:** traduce "esta estación determina la frecuencia" en "requiere *N* trenes por ventana de 15 minutos" o "un tren cada *X* minutos". Los valores absolutos se presentan como ilustración del orden de magnitud, con la capacidad declarada como supuesto.
 
 *Nota sobre la flota histórica:* entre 2014 y 2019 el servicio lo operaba Metrovías S.A., que en diciembre de 2021 pasó a denominarse Emova con el inicio de una nueva concesión. El material rodante es propiedad de la Ciudad, por lo que el cambio de operador no implica un cambio de flota. Durante el período, las tres líneas renovaron o combinaron flotas (Línea A: CITIC-CNR Serie 200, con flotas temporales Fiat-Materfer y Siemens-O&K; Línea B: Mitsubishi ex-Eidan 500, CAF 5000 y CAF 6000; Línea C: Nagoya 250/300/1200, Nagoya 5000 y, desde ~2018, CITIC-CNR Serie 200). Reconstruir una capacidad por línea y año sería necesario para comparar la demanda con la oferta histórica, lo que esta métrica no hace.
@@ -218,24 +210,23 @@ La métrica se aplica a las **proyecciones del modelo** para una temporada, no a
 - **Coches por formación** de cada línea, para pasar de capacidad por coche a capacidad por formación (*C_l*).
 - **Densidad de pie** con la que está definida la capacidad publicada. Si las fuentes usan densidades distintas o no la declaran, se recalcula a partir de la superficie del coche con una densidad común tomada de un estándar documentado (por ejemplo, los niveles de servicio del *Transit Capacity and Quality of Service Manual*; Ryus, 2013). Se vincula con la decisión pendiente sobre la ocupación objetivo.
 
-### Categorización de estaciones (OE4)
-Se basa en la frecuencia requerida, con reglas explícitas aplicadas por código:
-- **Estaciones determinantes:** las que fijan la frecuencia de su línea en algún tipo de día y franja, con la proporción de ventanas en que lo hacen.
-- **Exigencia relativa:** frecuencia requerida por la estación respecto de la de su línea, por tipo de día.
-- El detalle de las categorías y sus cortes se define al implementar, de modo que tabla y figura se generen con las mismas reglas.
+### Estaciones determinantes (OE4)
+Para cada línea y tipo de día se informa **qué estaciones determinan la frecuencia requerida y en qué horarios** (p. ej., "Línea C, sábado: Constitución entre las 07:00 y las 11:00"). Es una tabla descriptiva, sin umbrales ni cortes entre categorías.
+
+### Simplificación (2026-11-06)
+La primera versión de esta decisión incluía un factor de reparto entre sentidos (*k_s* = ½ en estaciones intermedias, 1 en cabeceras), una categorización por "exigencia relativa" con cortes y franjas horarias a definir, y un análisis de sensibilidad del factor de reparto. Se eliminan: cada elemento requería su propia justificación en el marco teórico y la metodología, para un objetivo (mostrar qué estaciones condicionan la frecuencia de cada línea) que la tabla descriptiva cumple. La limitación por sentido y carga a bordo se declara en lugar de modelarse. Con la simplificación, DM-05 agrega un párrafo al marco teórico y uno a la metodología.
 
 ### Impacto en los objetivos
-- **Objetivo Específico 4:** "Proponer una categorización de las estaciones según la frecuencia mínima requerida para atender la demanda proyectada, identificando las estaciones que determinan la frecuencia de cada línea por tipo de día y franja horaria, con el fin de orientar la optimización de la frecuencia de la línea completa."
+- **Objetivo Específico 4:** "Identificar, para cada línea y tipo de día, las estaciones que determinan la frecuencia mínima requerida para atender la demanda proyectada y los horarios en que lo hacen, con el fin de orientar la optimización de la frecuencia de la línea completa." (Reemplaza la "categorización de las estaciones basada en la presión de andén".)
 
 ### Impacto en el marco teórico
-- **2.2.3.2 (presión del andén):** se reemplaza por "Frecuencia requerida y estación determinante": la relación entre demanda, capacidad por formación, ocupación objetivo y frecuencia, y el carácter de cota inferior en estaciones intermedias. La noción de presión de andén puede conservarse como motivación.
-- **2.2.3.3 (frecuencia de despacho):** se conserva; pasa a ser el concepto central de la métrica.
-- **2.2.2, punto 3 (ausencia de egresos):** se reformula. La métrica sustituta ya no es la presión de andén sino la frecuencia requerida, exacta en cabeceras y cota inferior en el resto.
-- **Nueva referencia:** el estándar de densidad de pie y la fuente de capacidad del material rodante.
+- **2.2.3.2 (presión del andén):** se elimina como métrica. Su contenido pasa a un párrafo dentro de **2.2.3.3 (frecuencia de despacho)**: la frecuencia necesaria para atender una demanda es el cociente entre los abordajes por ventana y la capacidad útil por formación (capacidad × ocupación objetivo); en una línea la determina la estación de mayor demanda. La noción de hacinamiento en andenes puede mencionarse como motivación.
+- **2.2.2, punto 3 (ausencia de egresos):** se reformula. La métrica sustituta es la frecuencia requerida, con la limitación de sentido y carga a bordo.
+- **Nuevas referencias:** fuente de la capacidad del material rodante y estándar de densidad de pie.
 
 ### Impacto en la metodología y los resultados
-- **3.8:** la presión de andén se reemplaza por la frecuencia mínima requerida y la categorización por estación determinante.
-- **Sección 4 (4.5.2):** la Fig. 4.10 pasa a mostrar la frecuencia requerida por línea, tipo de día y franja; la Tabla 4.8, la categorización.
+- **3.8:** un párrafo con la fórmula, la estación determinante y la limitación.
+- **Sección 4 (4.5.2):** Fig. 4.10 con la curva de frecuencia requerida a lo largo del día por línea y tipo de día, marcando la estación determinante; Tabla 4.8 con las estaciones determinantes y sus horarios.
 
 ### Decisiones pendientes
 1. **Ocupación objetivo** (*φ*): definir si la capacidad se toma a una densidad confortable con *φ* = 1, o a la capacidad nominal con un factor de planificación (p. ej., 0,8).
