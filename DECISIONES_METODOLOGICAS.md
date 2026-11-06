@@ -162,7 +162,7 @@ Corresponde a la clasificación binaria actual, con permutación no estratificad
 Ninguna.
 
 ## DM-05 · De "presión de andén" a frecuencia mínima requerida
-- **Estado:** Aceptada (2026-11-05), pendiente de implementar. Requiere relevar la capacidad de la flota actual de cada línea (ver *Datos necesarios*).
+- **Estado:** Implementada (2026-11-06), salvo la escala absoluta: notebook, sección 7.4, con las proyecciones del modelo adoptado (V1 × forma). La capacidad de la flota actual (`CAPACIDAD_UTIL`) sigue pendiente de relevamiento; hasta cargarla, la frecuencia se expresa como demanda a absorber (pax/hora). *Convención de implementación:* la estación determinante se identifica por franjas de una hora (ingresos proyectados por hora), porque por ventana de 15 minutos las estaciones de demanda casi igual se alternaban (p. ej., Federico Lacroze y Carlos Gardel en la Línea B); las horas con menos de 1 pasajero proyectado se marcan como "sin demanda".
 - **Tipo:** Cambio de métrica operativa y del Objetivo Específico 4
 
 ### Problema

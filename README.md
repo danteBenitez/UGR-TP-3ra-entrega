@@ -13,8 +13,8 @@ Este repositorio contiene el pipeline analítico y el código fuente para el est
 4. **Ratio de Retención** (días con servicio, IC 95% por bootstrap): la red retiene el **38,59%** (37,47–39,72) de la demanda hábil los sábados y el **19,80%** (19,20–20,37) los domingos y feriados.
    - *Mayor Retención (Polos recreativos / transbordo):* **Carlos Gardel** (72,19% los sábados; 55,53% los domingos y feriados), **Alberti** y **Plaza Miserere** los sábados (54,10% y 53,00%), **Independencia** y **Retiro** los domingos y feriados (31,58% y 28,02%).
    - *Mayor Contracción (Distrito financiero / administrativo):* **Plaza de Mayo** y **Diagonal Norte** los sábados (18,47% y 18,76%); **Diagonal Norte** y **Florida** los domingos y feriados (9,18% y 9,22%).
-5. **Presión de Andén:** Con un umbral supuesto de 1.200 pax / 15 min, los 750 intervalos críticos en días no laborables ocurren todos en **Constitución**, el 92% entre las 07:00 y las 10:00 y casi todos en sábados (727; 23 en domingos y feriados), con tendencia creciente en el período. Esta métrica será reemplazada por la frecuencia mínima requerida (DM-05).
-6. **Modelo de planificación por temporada:** proyectando cada trimestre de 2019 con los datos anteriores a su inicio, el modelo estacional **V1 × forma** (volumen diario × distribución horaria) reproduce la retención por estación con un error medio de 1,2 pp (sábados) y 0,7 pp (domingos y feriados) y el volumen medio con un error de 3,8%. Los modelos XGBoost mejoran la precisión por ventana pero sobreestiman el nivel de 2019; se adopta V1 × forma según el criterio fijado antes de la evaluación (DM-06).
+5. **Modelo de planificación por temporada:** proyectando cada trimestre de 2019 con los datos anteriores a su inicio, el modelo estacional **V1 × forma** (volumen diario × distribución horaria) reproduce la retención por estación con un error medio de 1,2 pp (sábados) y 0,7 pp (domingos y feriados) y el volumen medio con un error de 3,8%. Los modelos XGBoost mejoran la precisión por ventana pero sobreestiman el nivel de 2019; se adopta V1 × forma según el criterio fijado antes de la evaluación (DM-06).
+6. **Frecuencia requerida:** la frecuencia de cada línea la determinan pocas estaciones (Constitución en la Línea C; San Pedrito y Perú en la A; Federico Lacroze, Leandro N. Alem y Carlos Gardel en la B). En la hora de mayor exigencia, la frecuencia requerida los sábados es del 23% al 39% de la del pico hábil, y del 10% al 18% los domingos y feriados.
 
 ---
 
@@ -32,21 +32,21 @@ EDA/
 │   │   ├── 03_perfil_horario_por_linea.png
 │   │   ├── 04_comparativa_habil_nolab_estaciones_clave.png
 │   │   ├── 05_retencion_por_estacion_ic.png
-│   │   ├── 06_presion_anden_ventanas_criticas.png
 │   │   ├── 07_tv_distribucion_horaria_por_estacion.png
 │   │   ├── 08_diferencias_por_ventana_estaciones_representativas.png
 │   │   ├── 09_perfiles_observados_vs_proyectados.png
-│   │   └── 10_sesgo_volumen_por_temporada.png
+│   │   ├── 10_sesgo_volumen_por_temporada.png
+│   │   └── 11_frecuencia_requerida_por_linea.png
 │   ├── tablas/                         # Tablas tabuladas en Markdown
 │   │   ├── 01_resumen_nulos_limpieza.md
 │   │   ├── 02_estadisticas_descriptivas.md
 │   │   ├── 03_ratios_retencion_linea.md
 │   │   ├── 04_ratios_retencion_top_bottom_estaciones.md
 │   │   ├── 05_distribucion_horaria_tv_permutacion.md
-│   │   ├── 06_presion_anden_analisis.md
 │   │   ├── 07_modelo_desempeno_por_ventana.md
 │   │   ├── 08_modelo_desempeno_por_perfil.md
-│   │   └── 09_retencion_proyectada_vs_observada.md
+│   │   ├── 09_retencion_proyectada_vs_observada.md
+│   │   └── 10_estaciones_determinantes.md
 │   └── resumen_metodologia.md          # Síntesis interpretativa para la sección escrita
 ├── notebook_eda_subte.ipynb            # Pipeline completo: ingesta → EDA → validación → exportación de tablas y gráficos
 ├── pyproject.toml / uv.lock            # Dependencias del proyecto (gestionadas con uv)

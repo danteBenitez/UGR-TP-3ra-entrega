@@ -129,8 +129,8 @@ Texto breve, sin figura: horizonte de una temporada, información admisible, eva
 ### 4.5.2. Frecuencia mínima requerida y estaciones determinantes
 | Elemento | Contenido | Fuente | Estado |
 |---|---|---|---|
-| **Fig. 4.10** | Curva de frecuencia mínima requerida a lo largo del día por línea y tipo de día, para la temporada proyectada, marcando la estación determinante en cada horario | Nueva | 🔧 DM-05 y DM-06 · ⏳ capacidad de la flota actual (sólo para la escala absoluta) |
-| **Tabla 4.8.** Estaciones determinantes | Para cada línea y tipo de día, las estaciones que determinan la frecuencia requerida y sus horarios (tabla descriptiva, sin umbrales) | Nueva | 🔧 DM-05 y DM-06 (no depende de la capacidad) |
+| **Fig. 4.10** | Curva de frecuencia mínima requerida a lo largo del día por línea y tipo de día, para la temporada proyectada, marcando la estación determinante en cada hora | Notebook 7.4; `11_frecuencia_requerida_por_linea.png` | ✅ en demanda a absorber · ⏳ trenes por hora (capacidad de la flota actual) |
+| **Tabla 4.8.** Estaciones determinantes | Para cada línea y tipo de día, las estaciones que determinan la frecuencia requerida y sus horarios (tabla descriptiva, sin umbrales) | Notebook 7.4; `10_estaciones_determinantes.md` | ✅ |
 
 **Qué aporta:** traduce la proyección de demanda en la variable de decisión del problema, la frecuencia por línea, e identifica qué estaciones la determinan y cuándo. Tabla y figura salen del mismo cálculo, de modo que no pueden contradecirse como en la versión anterior (Tabla 4.7 frente a Fig. 4.9).
 
