@@ -104,16 +104,16 @@ Texto breve, sin figura: horizonte de una temporada, información admisible, eva
 ### 4.4.2. Desempeño comparado
 | Elemento | Contenido | Fuente | Estado |
 |---|---|---|---|
-| **Tabla 4.5.** Desempeño por ventana | RMSE, MAE y R² por tipo de día: perfil histórico, V1 × forma y V2 × forma | Notebook (nueva sección de modelado) | 🔧 DM-06 |
-| **Tabla 4.6.** Desempeño por perfil | TV entre perfil predicho y observado, error de retención y error de volumen medio por estación | Ídem | 🔧 DM-06 |
+| **Tabla 4.5.** Desempeño por ventana | RMSE, MAE y R² por tipo de día: perfil histórico, V1 × forma, XGBoost directo y V2 × forma | Notebook 7.2; `07_modelo_desempeno_por_ventana.md` | ✅ |
+| **Tabla 4.6.** Desempeño por perfil | TV entre perfil predicho y observado, error de retención y error de volumen medio por estación | Notebook 7.2; `08_modelo_desempeno_por_perfil.md` | ✅ |
 
 **Qué aporta:** dimensiona la mejora real del aprendizaje automático frente a una referencia honesta. Se reporta aunque sea modesta (DM-06, decisión pendiente 2).
 
 ### 4.4.3. Análisis de errores
 | Elemento | Contenido | Fuente | Estado |
 |---|---|---|---|
-| **Fig. 4.8** | Perfiles observados frente a proyectados para una temporada de 2019, en las estaciones representativas | Ídem | 🔧 DM-06 |
-| **Fig. 4.9** | Sesgo de volumen por temporada y tipo de día de cada modelo | Ídem | 🔧 DM-06 (incluye corregir el sesgo de V2) |
+| **Fig. 4.8** | Perfiles observados frente a proyectados (modelo adoptado) para una temporada de 2019, en las estaciones representativas | Notebook 7.3; `09_perfiles_observados_vs_proyectados.png` | ✅ |
+| **Fig. 4.9** | Sesgo de volumen por temporada y tipo de día de cada modelo | Notebook 7.3; `10_sesgo_volumen_por_temporada.png` | ✅ |
 
 **Cómo se interpreta:** la forma se proyecta con precisión una temporada antes; el nivel es la componente incierta.
 
@@ -124,7 +124,7 @@ Texto breve, sin figura: horizonte de una temporada, información admisible, eva
 ### 4.5.1. Retención y forma proyectadas
 | Elemento | Contenido | Fuente | Estado |
 |---|---|---|---|
-| **Tabla 4.7.** Retención proyectada frente a observada por estación | Para las temporadas evaluadas de 2019 | Ídem | 🔧 DM-06 |
+| **Tabla 4.7.** Retención proyectada frente a observada por estación | Para las temporadas evaluadas de 2019, con el modelo adoptado (V1 × forma) | Notebook 7.3; `09_retencion_proyectada_vs_observada.md` | ✅ |
 
 ### 4.5.2. Frecuencia mínima requerida y categorización de estaciones
 | Elemento | Contenido | Fuente | Estado |

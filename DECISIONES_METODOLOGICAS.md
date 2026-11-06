@@ -242,7 +242,7 @@ Se basa en la frecuencia requerida, con reglas explícitas aplicadas por código
 2. **Contraste con los cronogramas publicados (opcional).** Comparar la frecuencia requerida con la programada actualmente por el operador, como ilustración de la brecha entre oferta y demanda proyectada. Las proyecciones se construyen con datos de 2014–2019 y los cronogramas son actuales; la comparación debe presentarse con esa salvedad.
 
 ## DM-06 · Reorientación del modelo predictivo hacia la planificación de cronogramas
-- **Estado:** Aceptada (2026-11-04), pendiente de implementar. Afecta el trabajo de modelado de la rama `origin/model`.
+- **Estado:** Implementada (2026-11-05). Notebook, sección 7. Modelo adoptado: V1 × forma (ver *Resultado de la implementación*). La rama `origin/model` queda superada.
 - **Tipo:** Cambio de diseño del modelo y de los objetivos específicos 2 a 4
 
 ### Problema
@@ -257,7 +257,7 @@ Además, el modelo fue entrenado con los datos previos a la corrección de DM-01
 
 ### Decisión
 - El modelo se orienta a la **planificación de cronogramas**, con un **horizonte de una temporada**: el cronograma de una temporada se decide con la información disponible hasta su inicio.
-- Se abandona el modelo de pronóstico en tiempo real (un paso y varios pasos adelante, estrategias recursiva y directa).
+- Se abandona el modelo de pronóstico en tiempo real (un paso y varios pasos adelante, estrategias recursiva y directa). **No se incluye en ninguna comparación ni se menciona en el documento** (2026-11-05): el trabajo compara sólo modelos de decisión por temporada, que usan la misma información admisible.
 
 ### Información admisible
 - **Sí:** variables de calendario (tipo de día según DM-03, ventana de 15 min, mes, posición de los feriados), identidad y geolocalización de la estación, y todo lo observado **hasta el fin de la temporada anterior** (nivel reciente, perfiles de meses recientes, misma temporada del año previo).
@@ -336,6 +336,22 @@ Las últimas cuatro columnas miden la calidad del perfil por estación × tipo d
 - **Coherencia con el resto del trabajo:** es la misma separación de DM-04, de modo que el análisis y el modelo comparten un único marco. Además, cada componente responde a una decisión de diagramación: el volumen determina la cantidad de servicios por tipo de día, y la forma, su distribución horaria.
 - **Expectativa de desempeño:** R² ≈ 0,93 por ventana, error de retención de ~0,6–0,8 pp y error de volumen medio de 4–6%.
 
+### Modelos comparados (2026-11-05)
+Para mostrar por qué conviene la separación volumen × forma, en lugar de sólo afirmarlo, se comparan cuatro modelos de decisión por temporada:
+
+| Modelo | Estructura | Rol |
+|---|---|---|
+| **Perfil histórico** | Promedio por estación × tipo de día × ventana | Línea base obligatoria |
+| **V1 × forma** | Nivel reciente × factor estacional, por la forma de los últimos 12 meses | Referencia sin aprendizaje automático |
+| **XGBoost directo** | Ingresos por ventana a partir de las variables admisibles | Estructura alternativa |
+| **V2 × forma** | XGBoost sobre el cociente del volumen respecto del nivel reciente, por la forma | Estructura propuesta |
+
+Condiciones para que la comparación sea justa:
+- **Misma información:** todos usan sólo las variables admisibles, calculadas a la fecha de inicio de cada temporada.
+- **Mismas filas, mismo esquema de origen móvil y mismas métricas** (por ventana y por perfil).
+- **Igual esfuerzo de ajuste** para los dos modelos XGBoost: la misma grilla de hiperparámetros, evaluada con las temporadas de 2018.
+- **Igual tratamiento del nivel:** cualquier corrección del sesgo de nivel (decisión pendiente 3) se ofrece a ambos modelos XGBoost; por ejemplo, la ventana de años de entrenamiento se incluye en la grilla de ajuste de los dos.
+
 ### Impacto en los objetivos
 - **Objetivo general:** sin cambios; la reorientación lo cumple con mayor fidelidad.
 - **OE2:** se reformula como predecir la demanda esperada por estación × ventana × tipo de día **para una temporada futura**, comparando modelos supervisados contra el perfil histórico.
@@ -366,8 +382,34 @@ Las últimas cuatro columnas miden la calidad del perfil por estación × tipo d
 
 ### Decisiones pendientes
 1. **Definición de temporada.** Se usaron trimestres calendario. El primer trimestre mezcla el valle estival de enero y febrero con la reactivación de marzo, y es donde más difieren las variantes. Idealmente, las temporadas deberían coincidir con los períodos en que el operador modifica sus cronogramas; si no se conocen, se usan trimestres o se separa el verano (enero–febrero) como período propio.
-2. **Resultado si el aprendizaje automático no supera la línea base.** Los experimentos muestran una mejora modesta pero consistente (V2 sobre V1 en error diario y retención). Si al implementarlo la mejora no se confirma, se informará como hallazgo: con horizonte de una temporada, la estructura regular del calendario explica casi toda la demanda que un cronograma puede atender. El modelo V1 × forma es en sí un modelo estadístico válido.
-3. **Sesgo de V2.** Diagnosticar y corregir la sobreestimación de ~5,5%. Opciones: entrenar sólo con años recientes, incorporar una variable de tendencia o combinar V2 con V1. Corregido el sesgo, V2 debería superar a V1 en todas las métricas; si no lo hace, se adopta V1.
+~~2. Resultado si el aprendizaje automático no supera la línea base~~ y ~~3. Sesgo de V2~~: resueltas en *Resultado de la implementación* (2026-11-05).
+
+### Resultado de la implementación (2026-11-05)
+Implementado en el notebook (sección 7), con los cuatro modelos, ajuste en los trimestres de 2018 y evaluación con origen móvil en los de 2019.
+
+**Tratamiento de cierres parciales.** Al implementar, el modelo V2 entrenado con todos los años resultó inestable (RMSE de 358 en el ajuste): en el último trimestre de 2014, la Línea B estuvo cerrada los domingos por obras, y algunos de esos días registraron 1 o 2 ingresos en lugar de cero. Con ellos, el nivel reciente de domingos y feriados caía a ~1 pasajero diario y el cociente objetivo llegaba a 7.000. Se aplica a los cierres parciales (ver DM-04 y `CAMBIOS_METODOLOGIA.md`, criterio derivado 3) el mismo criterio de día típico que al acotamiento de atípicos: se excluyen del cálculo de niveles, perfiles y rezagos, y de los objetivos de entrenamiento, con la mediana calculada sólo con datos anteriores a cada origen. La evaluación incluye todos los días con servicio.
+
+**Desempeño en 2019** (96 ventanas, origen móvil por trimestre):
+
+| Modelo | RMSE | MAE | R² | Sesgo de volumen | TV de forma | Error ret. sábado | Error ret. dom-fer | Error de volumen medio | Error diario mediano |
+|---|---|---|---|---|---|---|---|---|---|
+| Perfil histórico | 64,7 | 25,6 | 0,923 | −5,2% | 0,030 | 3,80 pp | 1,14 pp | 10,1% | 12,6% |
+| **V1 × forma** | 61,7 | 22,6 | 0,930 | **+2,4%** | **0,018** | 1,23 pp | **0,69 pp** | **3,8%** | 8,4% |
+| XGBoost directo | 59,3 | 23,9 | 0,936 | +6,3% | 0,043 | 3,07 pp | 4,57 pp | 19,5% | 9,8% |
+| V2 × forma | **59,1** | **21,8** | **0,936** | +5,7% | **0,018** | **0,80 pp** | 0,75 pp | 6,8% | **7,7%** |
+
+- **El XGBoost directo** casi iguala a V2 por ventana, pero es el peor de los cuatro en lo que determina un cronograma (volumen y retención): sobreestima los domingos y feriados en 21%. Confirma la conveniencia de separar volumen y forma.
+- **El sesgo de V2 no se corrigió:** la ventana de años de entrenamiento, ofrecida a ambos modelos XGBoost en la grilla, no lo modificó. V2 sobreestima el nivel de 2019 en ~5,7% de forma consistente entre trimestres, presumiblemente por proyectar el crecimiento de 2015–2018 sobre un año que no creció; ninguna información disponible una temporada antes permite anticiparlo.
+
+**Decisión: se adopta V1 × forma.** Conforme al criterio establecido el 2026-11-04, antes de la evaluación final ("corregido el sesgo, V2 debería superar a V1 en todas las métricas; si no lo hace, se adopta V1"), y dado que V2 no supera a V1 en todas las métricas:
+- V2 es mejor por ventana (RMSE, MAE), en el error diario y en la retención de los sábados: el aprendizaje automático captura los efectos de calendario (feriados, vísperas) y la variación entre días.
+- V1 está mejor calibrado en el nivel de volumen (sesgo +2,4% frente a +5,7%; error de volumen medio 3,8% frente a 6,8%), que es la componente que determina la frecuencia.
+
+V1 × forma es el modelo de las proyecciones operativas (OE3 y OE4, DM-05). V2 × forma se informa en la comparación con su desempeño.
+
+**Respuesta al Objetivo Específico 2.** El objetivo pide entrenar y comparar modelos de aprendizaje supervisado; se cumple con un diseño que da a todos los modelos la misma información, el mismo ajuste y el mismo tratamiento del nivel. El resultado de la comparación es **negativo para la adopción del aprendizaje automático** con este horizonte: con una temporada de antelación, la estructura estacional y la separación volumen × forma explican la mayor parte de lo que XGBoost captura, y la incertidumbre se concentra en el nivel, que ninguno de los modelos puede anticipar. Es un hallazgo de los datos, no una elección de conveniencia: el criterio de adopción se fijó antes de la evaluación. El objetivo general (un modelo predictivo que apoye la diagramación) se cumple con V1 × forma.
+
+*Cautela metodológica:* cualquier corrección adicional de V2 debe elegirse con los trimestres de 2018; ajustarla después de observar 2019 contaminaría la evaluación.
 
 ## DM-07 · De "desplazamiento de las horas pico" a "distribución horaria de la demanda"
 - **Estado:** Aceptada (2026-11-05), pendiente de incorporar al documento.

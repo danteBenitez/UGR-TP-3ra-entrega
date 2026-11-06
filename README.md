@@ -14,6 +14,7 @@ Este repositorio contiene el pipeline analítico y el código fuente para el est
    - *Mayor Retención (Polos recreativos / transbordo):* **Carlos Gardel** (72,19% los sábados; 55,53% los domingos y feriados), **Alberti** y **Plaza Miserere** los sábados (54,10% y 53,00%), **Independencia** y **Retiro** los domingos y feriados (31,58% y 28,02%).
    - *Mayor Contracción (Distrito financiero / administrativo):* **Plaza de Mayo** y **Diagonal Norte** los sábados (18,47% y 18,76%); **Diagonal Norte** y **Florida** los domingos y feriados (9,18% y 9,22%).
 5. **Presión de Andén:** Con un umbral supuesto de 1.200 pax / 15 min, los 750 intervalos críticos en días no laborables ocurren todos en **Constitución**, el 92% entre las 07:00 y las 10:00 y casi todos en sábados (727; 23 en domingos y feriados), con tendencia creciente en el período. Esta métrica será reemplazada por la frecuencia mínima requerida (DM-05).
+6. **Modelo de planificación por temporada:** proyectando cada trimestre de 2019 con los datos anteriores a su inicio, el modelo estacional **V1 × forma** (volumen diario × distribución horaria) reproduce la retención por estación con un error medio de 1,2 pp (sábados) y 0,7 pp (domingos y feriados) y el volumen medio con un error de 3,8%. Los modelos XGBoost mejoran la precisión por ventana pero sobreestiman el nivel de 2019; se adopta V1 × forma según el criterio fijado antes de la evaluación (DM-06).
 
 ---
 
@@ -33,14 +34,19 @@ EDA/
 │   │   ├── 05_retencion_por_estacion_ic.png
 │   │   ├── 06_presion_anden_ventanas_criticas.png
 │   │   ├── 07_tv_distribucion_horaria_por_estacion.png
-│   │   └── 08_diferencias_por_ventana_estaciones_representativas.png
+│   │   ├── 08_diferencias_por_ventana_estaciones_representativas.png
+│   │   ├── 09_perfiles_observados_vs_proyectados.png
+│   │   └── 10_sesgo_volumen_por_temporada.png
 │   ├── tablas/                         # Tablas tabuladas en Markdown
 │   │   ├── 01_resumen_nulos_limpieza.md
 │   │   ├── 02_estadisticas_descriptivas.md
 │   │   ├── 03_ratios_retencion_linea.md
 │   │   ├── 04_ratios_retencion_top_bottom_estaciones.md
 │   │   ├── 05_distribucion_horaria_tv_permutacion.md
-│   │   └── 06_presion_anden_analisis.md
+│   │   ├── 06_presion_anden_analisis.md
+│   │   ├── 07_modelo_desempeno_por_ventana.md
+│   │   ├── 08_modelo_desempeno_por_perfil.md
+│   │   └── 09_retencion_proyectada_vs_observada.md
 │   └── resumen_metodologia.md          # Síntesis interpretativa para la sección escrita
 ├── notebook_eda_subte.ipynb            # Pipeline completo: ingesta → EDA → validación → exportación de tablas y gráficos
 ├── pyproject.toml / uv.lock            # Dependencias del proyecto (gestionadas con uv)
@@ -79,6 +85,7 @@ Los datasets procesados (`data_processed/`) ya se encuentran incluidos en el rep
   ```bash
   uv run jupyter nbconvert --to notebook --execute --inplace notebook_eda_subte.ipynb
   ```
+  La ejecución completa tarda unos 15 minutos; la mayor parte corresponde al ajuste de hiperparámetros del modelo (sección 7.1).
 - **Re-ingesta desde los CSV originales:** colocar los 6 archivos `historico_AAAA.csv` en `csv/` y fijar `FORCE_REPROCESS = True` en la celda de configuración del notebook. Esto regenera además `data_processed/` y la tabla `01_resumen_nulos_limpieza.md`.
 
 ---

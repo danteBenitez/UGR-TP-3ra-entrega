@@ -19,13 +19,14 @@ La metodología cambia bastante más que el marco teórico: **cerca del 60–70%
 
 ## Criterios derivados
 
-Dos criterios que la Sección 3 debe explicitar. No requieren una decisión propia porque se siguen de decisiones ya tomadas, pero hoy son inconsistentes entre el análisis y el código del modelo (rama `origin/model`).
+Tres criterios que la Sección 3 debe explicitar. No requieren una decisión propia porque se siguen de decisiones ya tomadas, pero hoy son inconsistentes entre el análisis y el código del modelo (rama `origin/model`).
 
 1. **Exclusión de días sin servicio (se sigue de DM-04).** Se excluyen los días-estación con **ingreso total nulo**, tanto en el análisis como en el modelo. El código del modelo usaba un umbral de menos de 20 ingresos diarios, que se abandona en favor del criterio único de DM-04. El análisis de sensibilidad de DM-04 muestra que la elección casi no altera los resultados (menos de 0,4 pp en la retención de red); lo que importa es la coherencia.
 2. **Acotamiento de valores atípicos (se sigue del alcance de DM-04: día típico para servicios regulares).** En los **datos de entrenamiento del modelo**, los ingresos por ventana que superan un umbral alto se acotan a ese umbral. Como el método fundamenta la diagramación regular, y los eventos excepcionales requieren decisiones operativas propias, que esos días no arrastren la estimación es coherente con el alcance.
    - El umbral se calcula por estación × tipo de día (tres categorías, DM-03) usando **sólo datos anteriores al origen** de cada evaluación, para no introducir fuga. El código actual usa el máximo entre el percentil 99,9 y Q3 + 4,5·IQR, calculado por estación × hábil/no laborable sobre 2014–2017; debe adaptarse a ambos puntos.
    - El **análisis descriptivo e inferencial** (retención, TV, permutación) usa los valores observados sin acotar, de modo que los días excepcionales siguen visibles en la caracterización.
    - Debe corregirse el texto actual de 3.3, que afirma que los eventos reales "deban conservarse".
+3. **Cierres parciales en el modelo (se sigue del alcance de DM-04; contraparte del criterio 2).** Los días con ingreso positivo pero menor al 10% de la mediana de la estación para su tipo de día (cierres parciales) se excluyen del cálculo de niveles, perfiles y rezagos del modelo, y de sus objetivos de entrenamiento. La mediana se calcula sólo con datos anteriores a cada origen. La evaluación incluye todos los días con servicio, y el análisis descriptivo los conserva (con análisis de sensibilidad, DM-04). Sin este criterio, el nivel reciente de algunas estaciones caía a ~1 pasajero diario (cierres dominicales de la Línea B a fines de 2014 con 1 o 2 ingresos registrados) y desestabilizaba el modelo de volumen (DM-06).
 
 ---
 
@@ -118,6 +119,8 @@ Se reescribe. Contenido:
   - *Perfil histórico:* promedio por estación × tipo de día × ventana sobre los datos anteriores al origen.
   - *Estacional ingenuo:* nivel reciente × factor estacional del año previo, multiplicado por la forma.
 - **Modelo de aprendizaje automático:** XGBoost sobre el cociente de volumen, multiplicado por la forma.
+- **Estructura alternativa:** XGBoost directo sobre los ingresos por ventana, con las mismas variables admisibles, para mostrar el efecto de separar volumen y forma. Ambos modelos XGBoost reciben el mismo esfuerzo de ajuste y el mismo tratamiento del nivel (DM-06).
+- El modelo de pronóstico en tiempo real no se incluye ni se menciona.
 - **Ajuste de hiperparámetros:** con las temporadas de 2018, respetando el mismo esquema de origen móvil.
 - Si la regresión lineal se mantiene, debe usarse con las mismas variables admisibles y presentarse como un modelo más, no como la referencia.
 
