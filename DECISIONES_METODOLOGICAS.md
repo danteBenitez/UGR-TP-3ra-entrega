@@ -162,7 +162,7 @@ Corresponde a la clasificación binaria actual, con permutación no estratificad
 Ninguna.
 
 ## DM-05 · De "presión de andén" a frecuencia mínima requerida
-- **Estado:** Implementada (2026-11-06), salvo la escala absoluta: notebook, sección 7.4, con las proyecciones del modelo adoptado (V1 × forma). La capacidad de la flota actual (`CAPACIDAD_UTIL`) sigue pendiente de relevamiento; hasta cargarla, la frecuencia se expresa como demanda a absorber (pax/hora). *Convención de implementación:* la estación determinante se identifica por franjas de una hora (ingresos proyectados por hora), porque por ventana de 15 minutos las estaciones de demanda casi igual se alternaban (p. ej., Federico Lacroze y Carlos Gardel en la Línea B); las horas con menos de 1 pasajero proyectado se marcan como "sin demanda".
+- **Estado:** Implementada (2026-11-06): notebook, sección 7.4, con las proyecciones del modelo adoptado (V1 × forma). Capacidad cargada el 2026-11-06 (ver *Capacidad adoptada*); la frecuencia se expresa en trenes por hora. *Convención de implementación:* la estación determinante se identifica por franjas de una hora (ingresos proyectados por hora), porque por ventana de 15 minutos las estaciones de demanda casi igual se alternaban (p. ej., Federico Lacroze y Carlos Gardel en la Línea B); las horas con menos de 1 pasajero proyectado se marcan como "sin demanda".
 - **Tipo:** Cambio de métrica operativa y del Objetivo Específico 4
 
 ### Problema
@@ -210,6 +210,17 @@ La métrica se aplica a las **proyecciones del modelo** para una temporada, no a
 - **Coches por formación** de cada línea, para pasar de capacidad por coche a capacidad por formación (*C_l*).
 - **Densidad de pie** con la que está definida la capacidad publicada. Si las fuentes usan densidades distintas o no la declaran, se recalcula a partir de la superficie del coche con una densidad común tomada de un estándar documentado (por ejemplo, los niveles de servicio del *Transit Capacity and Quality of Service Manual*; Ryus, 2013). Se vincula con la decisión pendiente sobre la ocupación objetivo.
 
+### Capacidad adoptada (2026-11-06)
+Las capacidades publicadas usan densidades de pie distintas (la de la serie 6000 declara 6 pax/m²; la de los coches Nagoya, el estándar japonés de *定員*, del orden de 3,3 pax/m²; la de los CNR no la declara), por lo que se recalculan con asientos + área de pie a una **densidad común de 4 pax/m²**, un tren lleno pero aceptable. Con ello **φ = 1** (resuelve la decisión pendiente 1).
+
+| Línea | Modelo | Coches por formación | Por coche (a 4 pax/m²) | *C_l* | Fuentes |
+| :--- | :--- | :---: | :--- | :---: | :--- |
+| A | CITIC-CNR serie 200 | 5 (3M+2T) | 36 sentados + ~100 de pie | **680** | CNR Corporation, *Metro car for Argentina* (2013; formación y largo 17,5/17,0 m); *Railway Gazette*, 26-03-2013 (36 sentados + hasta 100 de pie) |
+| B | CAF 6000 | 6 | 26 sentados + 28,6 m² × 4 = 140 | **840** | *Vía Libre*, oct. 1998 (unidad M-M: 52 sentados, 343 de pie a 6 pax/m², de donde 57,2 m² de pie); *Tiempo Argentino*, 11-03-2018 (trenes de seis coches) |
+| C | CITIC-CNR serie 200 (flota mixta con Nagoya 5000) | 5 | Igual que la Línea A | **680** | GCBA, *Material rodante* (55 coches CNR en la Línea C); Nagoya 5000: 6 coches, ~124–129 por coche a 4 pax/m², ~760 por formación |
+
+En la Línea C se toma la formación de menor capacidad (criterio conservador de *Datos necesarios*). Verificación cruzada: la proporción entre área de pie y área bruta del coche de la serie 6000 (≈ 0,57) aplicada a un coche CNR de ~17,2 × 2,6 m da ~25,5 m², es decir ~100 de pie a 4 pax/m², coincidente con *Railway Gazette*. El ancho del coche CNR no se encontró en fuentes; 2,6 m es el de la flota anterior de la Línea A. Las cifras oficiales por coche (133 CNR, 193 CAF 6000, 115 Nagoya; GCBA) no declaran densidad.
+
 ### Estaciones determinantes (OE4)
 Para cada línea y tipo de día se informa **qué estaciones determinan la frecuencia requerida y en qué horarios** (p. ej., "Línea C, sábado: Constitución entre las 07:00 y las 11:00"). Es una tabla descriptiva, sin umbrales ni cortes entre categorías.
 
@@ -229,7 +240,7 @@ La primera versión de esta decisión incluía un factor de reparto entre sentid
 - **Sección 4 (4.5.2):** Fig. 4.10 con la curva de frecuencia requerida a lo largo del día por línea y tipo de día, marcando la estación determinante; Tabla 4.8 con las estaciones determinantes y sus horarios.
 
 ### Decisiones pendientes
-1. **Ocupación objetivo** (*φ*): definir si la capacidad se toma a una densidad confortable con *φ* = 1, o a la capacidad nominal con un factor de planificación (p. ej., 0,8).
+1. ~~**Ocupación objetivo** (*φ*)~~: resuelta (2026-11-06), densidad común de 4 pax/m² con *φ* = 1.
 2. **Contraste con los cronogramas publicados (opcional).** Comparar la frecuencia requerida con la programada actualmente por el operador, como ilustración de la brecha entre oferta y demanda proyectada. Las proyecciones se construyen con datos de 2014–2019 y los cronogramas son actuales; la comparación debe presentarse con esa salvedad.
 
 ## DM-06 · Reorientación del modelo predictivo hacia la planificación de cronogramas
